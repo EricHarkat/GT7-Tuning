@@ -1,0 +1,31 @@
+<p>detail works</p>
+
+@if (car(); as currentCar) {
+  <div class="page">
+    <button mat-button routerLink="/cars">← Retour</button>
+
+    <mat-card class="detail-card">
+      @if (currentCar.imageUrl) {
+        <img mat-card-image [src]="currentCar.imageUrl" [alt]="currentCar.name" />
+      }
+
+      <mat-card-content>
+        <h1>{{ currentCar.name }}</h1>
+        <p>{{ currentCar.manufacturer }}</p>
+
+        <div class="stats">
+          <div><span>Année</span><strong>{{ currentCar.normalized?.year || '—' }}</strong></div>
+          <div><span>PP</span><strong>{{ currentCar.normalized?.pp || '—' }}</strong></div>
+          <div><span>Puissance</span><strong>{{ currentCar.normalized?.powerHp || '—' }} PS</strong></div>
+          <div><span>Poids</span><strong>{{ currentCar.normalized?.weightKg || '—' }} kg</strong></div>
+          <div><span>Transmission</span><strong>{{ currentCar.normalized?.drivetrain || '—' }}</strong></div>
+          <div><span>Moteur</span><strong>{{ currentCar.engineType || '—' }}</strong></div>
+          <div><span>Catégorie</span><strong>{{ currentCar.category || '—' }}</strong></div>
+          <div><span>P/W</span><strong>{{ currentCar.normalized?.metrics?.powerToWeight || '—' }}</strong></div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+} @else {
+  <p>Chargement...</p>
+}
