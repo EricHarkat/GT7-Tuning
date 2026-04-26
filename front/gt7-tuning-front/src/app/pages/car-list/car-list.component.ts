@@ -4,6 +4,7 @@ import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 
 import { Car } from '../../models/car';
 import { CarService } from '../../services/car.services';
@@ -17,7 +18,8 @@ import { CarService } from '../../services/car.services';
     MatIconModule,
     MatButtonModule,
     MatPaginatorModule,
-    RouterLink
+    RouterLink,
+    MatCardModule
   ]
 })
 export class CarListComponent implements OnInit {
