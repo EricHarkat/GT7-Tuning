@@ -1,0 +1,32 @@
+.app-container {
+  height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  padding: 24px 16px;
+
+  h2 {
+    margin: 0 0 32px;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  a {
+    justify-content: flex-start;
+  }
+
+  .active {
+    font-weight: 700;
+  }
+}
+
+.content {
+  padding: 24px;
+}
