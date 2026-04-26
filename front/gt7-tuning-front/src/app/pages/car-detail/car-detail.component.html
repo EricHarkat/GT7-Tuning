@@ -1,30 +1,87 @@
-<p>detail works</p>
-
 @if (car(); as currentCar) {
   <div class="page">
-    <button mat-button routerLink="/cars">← Retour</button>
+    <button mat-button routerLink="/cars">← Retour aux voitures</button>
 
-    <mat-card class="detail-card">
+    <section class="hero">
       @if (currentCar.imageUrl) {
-        <img mat-card-image [src]="currentCar.imageUrl" [alt]="currentCar.name" />
+        <img [src]="currentCar.imageUrl" [alt]="currentCar.name" />
       }
 
-      <mat-card-content>
+      <div class="hero-content">
+        <p class="manufacturer">{{ currentCar.manufacturer }}</p>
         <h1>{{ currentCar.name }}</h1>
-        <p>{{ currentCar.manufacturer }}</p>
 
-        <div class="stats">
-          <div><span>Année</span><strong>{{ currentCar.normalized?.year || '—' }}</strong></div>
-          <div><span>PP</span><strong>{{ currentCar.normalized?.pp || '—' }}</strong></div>
-          <div><span>Puissance</span><strong>{{ currentCar.normalized?.powerHp || '—' }} PS</strong></div>
-          <div><span>Poids</span><strong>{{ currentCar.normalized?.weightKg || '—' }} kg</strong></div>
-          <div><span>Transmission</span><strong>{{ currentCar.normalized?.drivetrain || '—' }}</strong></div>
-          <div><span>Moteur</span><strong>{{ currentCar.engineType || '—' }}</strong></div>
-          <div><span>Catégorie</span><strong>{{ currentCar.category || '—' }}</strong></div>
-          <div><span>P/W</span><strong>{{ currentCar.normalized?.metrics?.powerToWeight || '—' }}</strong></div>
+        <div class="badges">
+          <span>{{ currentCar.category || 'Unknown' }}</span>
+          <span>{{ currentCar.engineType || '—' }}</span>
+          <span>{{ currentCar.normalized?.drivetrain || '—' }}</span>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <mat-card>
+        <span>PP</span>
+        <strong>{{ currentCar.normalized?.pp || '—' }}</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Année</span>
+        <strong>{{ currentCar.normalized?.year || '—' }}</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Puissance</span>
+        <strong>{{ currentCar.normalized?.powerHp || '—' }} PS</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Poids</span>
+        <strong>{{ currentCar.normalized?.weightKg || '—' }} kg</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Couple</span>
+        <strong>{{ currentCar.normalized?.torque || '—' }}</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Poids / puissance</span>
+        <strong>{{ currentCar.normalized?.metrics?.weightToPower || '—' }} kg/PS</strong>
+      </mat-card>
+    </section>
+
+    <section class="details-grid">
+      <mat-card>
+        <mat-card-title>Caractéristiques techniques</mat-card-title>
+
+        <div class="spec-list">
+          <div><span>Moteur</span><strong>{{ currentCar.specs?.['engine_type'] || '—' }}</strong></div>
+          <div><span>Aspiration</span><strong>{{ currentCar.specs?.['aspiration'] || '—' }}</strong></div>
+          <div><span>Transmission</span><strong>{{ currentCar.specs?.['drivetrain'] || '—' }}</strong></div>
+          <div><span>Boîte</span><strong>{{ currentCar.specs?.['gearbox'] || '—' }}</strong></div>
+          <div><span>Répartition</span><strong>{{ currentCar.specs?.['balance'] || '—' }}</strong></div>
+          <div><span>Vitesse max</span><strong>{{ currentCar.specs?.['top_speed'] || '—' }}</strong></div>
+        </div>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-title>Dimensions</mat-card-title>
+
+        <div class="spec-list">
+          <div><span>Longueur</span><strong>{{ currentCar.specs?.['length'] || '—' }}</strong></div>
+          <div><span>Largeur</span><strong>{{ currentCar.specs?.['width'] || '—' }}</strong></div>
+          <div><span>Hauteur</span><strong>{{ currentCar.specs?.['height'] || '—' }}</strong></div>
+          <div><span>PWR brut</span><strong>{{ currentCar.specs?.['pwr'] || '—' }}</strong></div>
+        </div>
+      </mat-card>
+    </section>
+
+    @if (currentCar.pageUrl) {
+      <a mat-raised-button color="primary" [href]="currentCar.pageUrl" target="_blank">
+        Voir la source Fandom
+      </a>
+    }
   </div>
 } @else {
   <p>Chargement...</p>
