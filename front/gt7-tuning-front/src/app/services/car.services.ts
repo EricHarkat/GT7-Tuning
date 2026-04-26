@@ -18,7 +18,7 @@ export class CarService {
 
   constructor(private http: HttpClient) {}
 
-  getCars(page = 1, limit = 50): Observable<CarsResponse> {
+  getCars(page = 1, limit = 25): Observable<CarsResponse> {
     const params = new HttpParams()
       .set('page', page)
       .set('limit', limit);
