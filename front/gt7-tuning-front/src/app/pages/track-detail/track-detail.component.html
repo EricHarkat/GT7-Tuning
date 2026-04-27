@@ -1,0 +1,134 @@
+@if (track(); as currentTrack) {
+  <div class="page">
+    <button mat-button routerLink="/tracks">← Retour aux circuits</button>
+
+    <section class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">GT7 Track</p>
+        <h1>{{ currentTrack.name }}</h1>
+
+        <p class="subtitle">
+          {{ currentTrack.course }} / {{ currentTrack.layout }}
+        </p>
+
+        <div class="badges">
+          <span>{{ currentTrack.category || 'unknown' }}</span>
+          <span>{{ currentTrack.trackType || '—' }}</span>
+          <span>{{ currentTrack.country || '—' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <mat-card>
+        <span>Longueur</span>
+        <strong>{{ currentTrack.lengthMeters || '—' }} m</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Type</span>
+        <strong>{{ currentTrack.trackType || '—' }}</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Catégorie</span>
+        <strong>{{ currentTrack.category || '—' }}</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Pays</span>
+        <strong>{{ currentTrack.country || '—' }}</strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Pluie</span>
+        <strong>
+          {{ currentTrack.rain === true ? 'Oui' : currentTrack.rain === false ? 'Non' : '—' }}
+        </strong>
+      </mat-card>
+
+      <mat-card>
+        <span>Reverse</span>
+        <strong>
+          {{ currentTrack.reversible === true ? 'Oui' : currentTrack.reversible === false ? 'Non' : '—' }}
+        </strong>
+      </mat-card>
+    </section>
+
+    <section class="details-grid">
+      <mat-card>
+        <mat-card-title>Informations du tracé</mat-card-title>
+
+        <div class="spec-list">
+          <div>
+            <span>Course</span>
+            <strong>{{ currentTrack.course || '—' }}</strong>
+          </div>
+
+          <div>
+            <span>Layout</span>
+            <strong>{{ currentTrack.layout || '—' }}</strong>
+          </div>
+
+          <div>
+            <span>GT Sophy</span>
+            <strong>{{ currentTrack.gtSophy || '—' }}</strong>
+          </div>
+
+          <div>
+            <span>Longueur brute</span>
+            <strong>{{ currentTrack.lengthRaw || '—' }}</strong>
+          </div>
+
+          <div>
+            <span>Image source</span>
+            <strong>{{ currentTrack.image || '—' }}</strong>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-title>Profil tuning potentiel</mat-card-title>
+
+        <div class="profile">
+          @if (currentTrack.category === 'high_speed') {
+            <p>
+              Circuit rapide : privilégier la vitesse de pointe, l’aérodynamique
+              efficace et une boîte adaptée aux longues lignes droites.
+            </p>
+          } @else if (currentTrack.category === 'technical') {
+            <p>
+              Circuit technique : privilégier la rotation, la motricité en sortie
+              de virage et la stabilité au freinage.
+            </p>
+          } @else if (currentTrack.category === 'rally') {
+            <p>
+              Tracé rally/surface spéciale : priorité à la traction, à la stabilité
+              et à une suspension plus permissive.
+            </p>
+          } @else {
+            <p>
+              Circuit équilibré : chercher un compromis entre stabilité, vitesse
+              de passage en courbe et vitesse de pointe.
+            </p>
+          }
+
+          @if (currentTrack.rain === true) {
+            <p>
+              La pluie est disponible : les réglages devront aussi tenir compte
+              de la motricité et de la stabilité sur surface humide.
+            </p>
+          }
+        </div>
+      </mat-card>
+    </section>
+
+    @if (currentTrack.sourceUrl) {
+      <a mat-raised-button color="primary" [href]="currentTrack.sourceUrl" target="_blank">
+        Voir la source
+      </a>
+    }
+  </div>
+} @else {
+  <p>Chargement...</p>
+}

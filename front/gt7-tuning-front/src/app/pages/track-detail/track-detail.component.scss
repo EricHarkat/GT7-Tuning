@@ -1,0 +1,125 @@
+.page {
+  padding: 24px;
+}
+
+.hero {
+  margin-top: 16px;
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(12, 12, 16, 0.96), rgba(35, 35, 52, 0.94));
+  color: white;
+}
+
+.hero-content {
+  padding: 48px;
+
+  .eyebrow {
+    margin: 0 0 8px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 46px;
+    line-height: 1.05;
+  }
+
+  .subtitle {
+    margin: 12px 0 0;
+    opacity: 0.72;
+    font-size: 18px;
+  }
+}
+
+.badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+
+  span {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    text-transform: capitalize;
+  }
+}
+
+.stats-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+
+  mat-card {
+    padding: 18px;
+
+    span {
+      display: block;
+      font-size: 13px;
+      opacity: 0.65;
+    }
+
+    strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 22px;
+    }
+  }
+}
+
+.details-grid {
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 24px;
+
+  mat-card {
+    padding: 20px;
+  }
+}
+
+.spec-list {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  span {
+    opacity: 0.65;
+  }
+
+  strong {
+    text-align: right;
+  }
+}
+
+.profile {
+  margin-top: 16px;
+  line-height: 1.6;
+
+  p {
+    margin: 0 0 12px;
+  }
+}
+
+@media (max-width: 800px) {
+  .hero-content {
+    padding: 28px;
+
+    h1 {
+      font-size: 34px;
+    }
+  }
+}

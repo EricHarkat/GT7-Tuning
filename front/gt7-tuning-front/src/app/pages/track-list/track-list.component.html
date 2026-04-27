@@ -1,0 +1,104 @@
+<div class="page">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Gran Turismo 7 Database</p>
+      <h1>Tracks</h1>
+      <p class="subtitle">
+        Explore les circuits, layouts, conditions météo et profils de tracés.
+      </p>
+    </div>
+  </section>
+
+  <mat-card class="table-card">
+    <div class="table-header">
+      <div>
+        <h2>Circuits</h2>
+        <p>{{ total() }} tracés disponibles</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="tracks()" class="tracks-table">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Tracé</th>
+          <td mat-cell *matCellDef="let track">
+            <div class="track-name">
+              <strong>{{ track.name }}</strong>
+              <span>{{ track.course }} / {{ track.layout }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="country">
+          <th mat-header-cell *matHeaderCellDef>Pays</th>
+          <td mat-cell *matCellDef="let track">{{ track.country || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="trackType">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let track">
+            <span class="pill muted">{{ track.trackType || '—' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+          <td mat-cell *matCellDef="let track">
+            <span class="pill">{{ track.category || 'unknown' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="length">
+          <th mat-header-cell *matHeaderCellDef>Longueur</th>
+          <td mat-cell *matCellDef="let track">
+            <strong>{{ track.lengthMeters || '—' }} m</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rain">
+          <th mat-header-cell *matHeaderCellDef>Pluie</th>
+          <td mat-cell *matCellDef="let track">
+            {{ track.rain === true ? 'Oui' : track.rain === false ? 'Non' : '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="reversible">
+          <th mat-header-cell *matHeaderCellDef>Reverse</th>
+          <td mat-cell *matCellDef="let track">
+            {{ track.reversible === true ? 'Oui' : track.reversible === false ? 'Non' : '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="details">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let track">
+            <button
+              mat-icon-button
+              class="details-button"
+              [routerLink]="['/tracks', track._id]"
+              aria-label="Voir les détails"
+            >
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          class="track-row"
+          *matRowDef="let row; columns: displayedColumns"
+        ></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      showFirstLastButtons
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </mat-card>
+</div>
