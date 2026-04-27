@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
 import { Track } from '../../models/track';
-import { TrackService } from '../../services/track.service';
+import { TrackService } from '../../services/track.services';
 
 @Component({
   selector: 'app-track-detail',

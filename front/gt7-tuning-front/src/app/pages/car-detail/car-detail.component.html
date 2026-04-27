@@ -19,6 +19,55 @@
       </div>
     </section>
 
+    <mat-form-field appearance="outline">
+  <mat-label>Choisir un circuit</mat-label>
+  <mat-select
+    [ngModel]="selectedTrackId()"
+    (ngModelChange)="selectedTrackId.set($event)"
+    >
+      <mat-option value="">Aucun</mat-option>
+
+      @for (track of tracks(); track track._id) {
+        <mat-option [value]="track._id">
+          {{ track.name }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  @if (analysis(); as tuning) {
+  <mat-card class="analysis-card">
+    <mat-card-title>Analyse tuning</mat-card-title>
+
+    <div class="analysis-section">
+      <span>Comportement probable</span>
+      <strong>{{ tuning.behavior }}</strong>
+    </div>
+
+    <div class="analysis-grid">
+      <div>
+        <h3>Risques</h3>
+        @for (risk of tuning.risks; track risk) {
+          <p>• {{ risk }}</p>
+        }
+      </div>
+
+      <div>
+        <h3>Priorités</h3>
+        @for (priority of tuning.priorities; track priority) {
+          <p>• {{ priority }}</p>
+        }
+      </div>
+
+      <div>
+        <h3>Recommandations</h3>
+        @for (recommendation of tuning.recommendations; track recommendation) {
+          <p>• {{ recommendation }}</p>
+        }
+      </div>
+    </div>
+  </mat-card>
+}
+
     <section class="stats-grid">
       <mat-card>
         <span>PP</span>

@@ -121,3 +121,50 @@
     }
   }
 }
+
+.analysis-card {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.analysis-section {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(25, 118, 210, 0.08);
+
+  span {
+    display: block;
+    font-size: 13px;
+    opacity: 0.65;
+  }
+
+  strong {
+    display: block;
+    margin-top: 6px;
+    font-size: 20px;
+  }
+}
+
+.analysis-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+
+  div {
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  h3 {
+    margin: 0 0 12px;
+  }
+
+  p {
+    margin: 8px 0;
+    line-height: 1.45;
+  }
+}

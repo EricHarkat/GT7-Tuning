@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
 import { Track } from '../../models/track';
-import { TrackService } from '../../services/track.service';
+import { TrackService } from '../../services/track.services';
 
 @Component({
   selector: 'app-track-list',
