@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import carRoutes from "./routes/car.routes";
+import trackRoutes from "./routes/track.routes";
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/cars", carRoutes);
+app.use("/tracks", trackRoutes);
 
 export default app;
