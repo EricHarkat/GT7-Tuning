@@ -15,6 +15,74 @@
         <h2>Circuits</h2>
         <p>{{ total() }} tracés disponibles</p>
       </div>
+      <div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>Recherche</mat-label>
+    <input
+      matInput
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+      (keyup.enter)="applyFilters()"
+      placeholder="Monza, Spa, Tokyo..."
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Catégorie</mat-label>
+    <mat-select
+      [ngModel]="category()"
+      (ngModelChange)="category.set($event); applyFilters()"
+    >
+      <mat-option value="">Toutes</mat-option>
+      @for (item of categories; track item) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Type</mat-label>
+    <mat-select
+      [ngModel]="trackType()"
+      (ngModelChange)="trackType.set($event); applyFilters()"
+    >
+      <mat-option value="">Tous</mat-option>
+      @for (item of trackTypes; track item) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Pluie</mat-label>
+    <mat-select
+      [ngModel]="rain()"
+      (ngModelChange)="rain.set($event); applyFilters()"
+    >
+      <mat-option value="">Tous</mat-option>
+      <mat-option value="true">Oui</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Reverse</mat-label>
+    <mat-select
+      [ngModel]="reversible()"
+      (ngModelChange)="reversible.set($event); applyFilters()"
+    >
+      <mat-option value="">Tous</mat-option>
+      <mat-option value="true">Oui</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-stroked-button (click)="applyFilters()">
+    Rechercher
+  </button>
+
+  <button mat-button (click)="resetFilters()">
+    Reset
+  </button>
+</div>
     </div>
 
     <div class="table-wrapper">

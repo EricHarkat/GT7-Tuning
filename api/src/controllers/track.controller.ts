@@ -3,12 +3,19 @@ import { TrackService } from "../services/track.service";
 
 export class TrackController {
   static async getTracks(req: Request, res: Response) {
-    const limit = Number(req.query.limit) || 25;
-    const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 25;
+  const page = Number(req.query.page) || 1;
 
-    const result = await TrackService.getTracks(page, limit);
-    res.json(result);
-  }
+  const result = await TrackService.getTracks(page, limit, {
+    search: String(req.query.search || ""),
+    category: String(req.query.category || ""),
+    trackType: String(req.query.trackType || ""),
+    rain: String(req.query.rain || ""),
+    reversible: String(req.query.reversible || "")
+  });
+
+  res.json(result);
+}
 
   static async getTrackById(req: Request, res: Response) {
     const track = await TrackService.getTrackById(req.params.id);

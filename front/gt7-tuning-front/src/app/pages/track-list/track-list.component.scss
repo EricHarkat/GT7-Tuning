@@ -122,3 +122,35 @@
 mat-paginator {
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
+
+.filters {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 1.4fr)
+    repeat(4, minmax(140px, 1fr))
+    auto
+    auto;
+  gap: 12px;
+  align-items: center;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  button {
+    height: 48px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .filters {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
