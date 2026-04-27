@@ -15,6 +15,65 @@
         <h2>Voitures</h2>
         <p>{{ total() }} voitures disponibles</p>
       </div>
+      <div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>Recherche</mat-label>
+    <input
+      matInput
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+      (keyup.enter)="applyFilters()"
+      placeholder="Supra, Ferrari, Nissan..."
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Catégorie</mat-label>
+    <mat-select
+      [ngModel]="category()"
+      (ngModelChange)="category.set($event); applyFilters()"
+    >
+      <mat-option value="">Toutes</mat-option>
+      @for (item of categories; track item) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Transmission</mat-label>
+    <mat-select
+      [ngModel]="drivetrain()"
+      (ngModelChange)="drivetrain.set($event); applyFilters()"
+    >
+      <mat-option value="">Toutes</mat-option>
+      @for (item of drivetrains; track item) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Moteur</mat-label>
+    <mat-select
+      [ngModel]="engineType()"
+      (ngModelChange)="engineType.set($event); applyFilters()"
+    >
+      <mat-option value="">Tous</mat-option>
+      @for (item of engineTypes; track item) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-stroked-button (click)="applyFilters()">
+    Rechercher
+  </button>
+
+  <button mat-button (click)="resetFilters()">
+    Reset
+  </button>
+</div>
     </div>
 
     <div class="table-wrapper">

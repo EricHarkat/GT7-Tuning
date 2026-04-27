@@ -2,16 +2,18 @@ import { Request, Response, NextFunction } from "express";
 import { CarService } from "../services/car.service";
 
 export class CarController {
-  static async getCars(req: Request, res: Response, next: NextFunction) {
-    try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
+  static async getCars(req: Request, res: Response) {
+  const limit = Number(req.query.limit) || 25;
+  const page = Number(req.query.page) || 1;
 
-      const result = await CarService.getCars(page, limit);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
+  const result = await CarService.getCars(page, limit, {
+    search: String(req.query.search || ""),
+    category: String(req.query.category || ""),
+    drivetrain: String(req.query.drivetrain || ""),
+    engineType: String(req.query.engineType || "")
+  });
+
+    res.json(result);
   }
 
   static async searchCars(req: Request, res: Response, next: NextFunction) {

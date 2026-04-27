@@ -18,13 +18,38 @@ export class CarService {
 
   constructor(private http: HttpClient) {}
 
-  getCars(page = 1, limit = 25): Observable<CarsResponse> {
-    const params = new HttpParams()
-      .set('page', page)
-      .set('limit', limit);
-
-    return this.http.get<CarsResponse>(this.apiUrl, { params });
+ getCars(
+  page = 1,
+  limit = 25,
+  filters?: {
+    search?: string;
+    category?: string;
+    drivetrain?: string;
+    engineType?: string;
   }
+): Observable<CarsResponse> {
+  let params = new HttpParams()
+    .set('page', page)
+    .set('limit', limit);
+
+  if (filters?.search) {
+    params = params.set('search', filters.search);
+  }
+
+  if (filters?.category) {
+    params = params.set('category', filters.category);
+  }
+
+  if (filters?.drivetrain) {
+    params = params.set('drivetrain', filters.drivetrain);
+  }
+
+  if (filters?.engineType) {
+    params = params.set('engineType', filters.engineType);
+  }
+
+  return this.http.get<CarsResponse>(this.apiUrl, { params });
+}
 
   searchCars(query: string): Observable<Car[]> {
     const params = new HttpParams().set('q', query);
