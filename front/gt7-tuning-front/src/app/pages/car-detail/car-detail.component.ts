@@ -36,6 +36,7 @@ export class CarDetailComponent implements OnInit {
 
   tracks = signal<Track[]>([]);
   selectedTrackId = signal('');
+  currentStepIndex = signal(0);
 
   parts = signal<InstalledParts>({
     suspension: 'stock',
@@ -152,6 +153,23 @@ export class CarDetailComponent implements OnInit {
     this.parts()
   );
 });
+
+currentStep = computed(() => {
+  const steps = this.guidedSteps();
+  return steps[this.currentStepIndex()] || null;
+});
+
+nextStep() {
+  if (this.currentStepIndex() < this.guidedSteps().length - 1) {
+    this.currentStepIndex.update(v => v + 1);
+  }
+}
+
+prevStep() {
+  if (this.currentStepIndex() > 0) {
+    this.currentStepIndex.update(v => v - 1);
+  }
+}
 
   updatePart<K extends keyof InstalledParts>(
     key: K,

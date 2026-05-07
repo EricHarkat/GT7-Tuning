@@ -23,16 +23,35 @@
   <mat-card class="guided-card">
     <mat-card-title>Guided Tuning</mat-card-title>
 
-    @for (step of guidedSteps(); track step.id) {
-      <div class="step">
-        <h3>Étape {{ step.id }} — {{ step.title }}</h3>
-        <p>{{ step.description }}</p>
+    @if (currentStep(); as step) {
+  <div class="step">
+    <h3>Étape {{ step.id }} — {{ step.title }}</h3>
+    <p>{{ step.description }}</p>
 
-        @for (rec of step.recommendations; track rec) {
-          <p class="rec">• {{ rec }}</p>
-        }
-      </div>
+    @for (rec of step.recommendations; track rec) {
+      <p class="rec">• {{ rec }}</p>
     }
+
+    <div class="step-actions">
+      <button
+        mat-button
+        (click)="prevStep()"
+        [disabled]="currentStepIndex() === 0"
+      >
+        ← Précédent
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="nextStep()"
+        [disabled]="currentStepIndex() === guidedSteps().length - 1"
+      >
+        Suivant →
+      </button>
+    </div>
+  </div>
+}
   </mat-card>
 }
 
