@@ -19,6 +19,23 @@
       </div>
     </section>
 
+    @if (guidedSteps().length) {
+  <mat-card class="guided-card">
+    <mat-card-title>Guided Tuning</mat-card-title>
+
+    @for (step of guidedSteps(); track step.id) {
+      <div class="step">
+        <h3>Étape {{ step.id }} — {{ step.title }}</h3>
+        <p>{{ step.description }}</p>
+
+        @for (rec of step.recommendations; track rec) {
+          <p class="rec">• {{ rec }}</p>
+        }
+      </div>
+    }
+  </mat-card>
+}
+
     <section class="config-grid">
       <mat-card class="config-card">
         <mat-card-title>Configuration voiture</mat-card-title>

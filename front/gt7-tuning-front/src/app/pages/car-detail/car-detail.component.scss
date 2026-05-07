@@ -227,3 +227,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+.guided-card {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.step {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.04);
+
+  h3 {
+    margin-bottom: 6px;
+  }
+
+  .rec {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+}

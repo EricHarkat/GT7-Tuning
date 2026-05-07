@@ -16,6 +16,7 @@ import {
 
 import { Car } from '../../models/car';
 import { Track } from '../../models/track';
+import { GuidedTuning, TuningStep } from '../../services/guided-tuning';
 
 @Component({
   selector: 'app-car-detail',
@@ -102,7 +103,8 @@ export class CarDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private carService: CarService,
     private trackService: TrackService,
-    private tuningAnalysisService: TuningAnalysisService
+    private tuningAnalysisService: TuningAnalysisService,
+    private guidedTuning: GuidedTuning
   ) {}
 
   ngOnInit(): void {
@@ -139,6 +141,17 @@ export class CarDetailComponent implements OnInit {
       this.parts()
     );
   });
+
+  guidedSteps = computed(() => {
+  const car = this.car();
+  if (!car) return [];
+
+  return this.guidedTuning.generateSteps(
+    car,
+    this.selectedTrack(),
+    this.parts()
+  );
+});
 
   updatePart<K extends keyof InstalledParts>(
     key: K,
