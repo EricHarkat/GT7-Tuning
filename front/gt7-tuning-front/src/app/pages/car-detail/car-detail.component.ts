@@ -1,34 +1,102 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CarService } from '../../services/car.services';
-import { TrackService } from '../../services/track.services';
-import { Car } from '../../models/car';
+import { FormsModule } from '@angular/forms';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-
-import { TuningAnalysisService } from '../../services/tuning-analysis.service';
-import { Track } from '../../models/track';
-
-import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+
+import { CarService } from '../../services/car.services';
+import { TrackService } from '../../services/track.services';
+import {
+  InstalledParts,
+  TuningAnalysisService
+} from '../../services/tuning-analysis.service';
+
+import { Car } from '../../models/car';
+import { Track } from '../../models/track';
 
 @Component({
   selector: 'app-car-detail',
   templateUrl: './car-detail.component.html',
   styleUrl: './car-detail.component.scss',
-  imports: [MatCardModule, MatButtonModule, RouterLink, FormsModule, MatFormFieldModule, MatSelectModule]
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    RouterLink,
+    FormsModule,
+    MatFormFieldModule,
+    MatSelectModule
+  ]
 })
 export class CarDetailComponent implements OnInit {
   car = signal<Car | null>(null);
-  selectedTrackId = signal('');
+
   tracks = signal<Track[]>([]);
-  parts = signal({
-  suspension: 'stock',
-  differential: 'stock',
-  transmission: 'stock',
-  tires: 'Sport Soft'
-});
+  selectedTrackId = signal('');
+
+  parts = signal<InstalledParts>({
+    suspension: 'stock',
+    differential: 'stock',
+    transmission: 'stock',
+    aero: 'stock',
+    brakes: 'stock',
+    tires: 'sports_soft',
+    ballast: false,
+    ecu: 'stock',
+    powerRestrictor: false
+  });
+
+  suspensionOptions = [
+    { value: 'stock', label: 'Stock' },
+    { value: 'sport', label: 'Sport' },
+    { value: 'fully_customizable', label: 'Fully Customizable' }
+  ];
+
+  differentialOptions = [
+    { value: 'stock', label: 'Stock' },
+    { value: 'lsd', label: 'LSD' },
+    { value: 'fully_customizable', label: 'Fully Customizable' }
+  ];
+
+  transmissionOptions = [
+    { value: 'stock', label: 'Stock' },
+    { value: 'manual', label: 'Manual' },
+    { value: 'fully_customizable', label: 'Fully Customizable' }
+  ];
+
+  aeroOptions = [
+    { value: 'stock', label: 'Stock' },
+    { value: 'custom', label: 'Custom Aero' }
+  ];
+
+  brakeOptions = [
+    { value: 'stock', label: 'Stock' },
+    { value: 'sport', label: 'Sport' },
+    { value: 'racing', label: 'Racing' }
+  ];
+
+  tireOptions = [
+    { value: 'comfort_hard', label: 'Comfort Hard' },
+    { value: 'comfort_medium', label: 'Comfort Medium' },
+    { value: 'comfort_soft', label: 'Comfort Soft' },
+    { value: 'sports_hard', label: 'Sports Hard' },
+    { value: 'sports_medium', label: 'Sports Medium' },
+    { value: 'sports_soft', label: 'Sports Soft' },
+    { value: 'racing_hard', label: 'Racing Hard' },
+    { value: 'racing_medium', label: 'Racing Medium' },
+    { value: 'racing_soft', label: 'Racing Soft' },
+    { value: 'intermediate', label: 'Intermediate' },
+    { value: 'racing_wet', label: 'Racing Wet' },
+    { value: 'dirt', label: 'Dirt' }
+  ];
+
+  ecuOptions = [
+    { value: 'stock', label: 'Stock' },
+    { value: 'sports', label: 'Sports' },
+    { value: 'fully_customizable', label: 'Fully Customizable' }
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -38,21 +106,24 @@ export class CarDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  const id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id');
 
-  if (id) {
-    this.carService.getCarById(id).subscribe(car => {
-      this.car.set(car);
+    if (id) {
+      this.carService.getCarById(id).subscribe((car) => {
+        this.car.set(car);
+      });
+    }
+
+    this.trackService.getTracks(1, 200).subscribe((res) => {
+      this.tracks.set(res.tracks);
     });
   }
 
-  this.trackService.getTracks(1, 200).subscribe(res => {
-    this.tracks.set(res.tracks);
-  });
-  }
-
   selectedTrack = computed(() => {
-  return this.tracks().find(track => track._id === this.selectedTrackId()) || null;
+    return (
+      this.tracks().find((track) => track._id === this.selectedTrackId()) ||
+      null
+    );
   });
 
   analysis = computed(() => {
@@ -62,8 +133,20 @@ export class CarDetailComponent implements OnInit {
       return null;
     }
 
-    return this.tuningAnalysisService.analyze(currentCar, this.selectedTrack(),
-    this.parts());
+    return this.tuningAnalysisService.analyze(
+      currentCar,
+      this.selectedTrack(),
+      this.parts()
+    );
   });
 
+  updatePart<K extends keyof InstalledParts>(
+    key: K,
+    value: InstalledParts[K]
+  ): void {
+    this.parts.set({
+      ...this.parts(),
+      [key]: value
+    });
+  }
 }

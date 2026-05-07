@@ -19,115 +19,202 @@
       </div>
     </section>
 
-    <mat-card>
-    <mat-card-title>Configuration voiture</mat-card-title>
+    <section class="config-grid">
+      <mat-card class="config-card">
+        <mat-card-title>Configuration voiture</mat-card-title>
 
-    <div class="parts-grid">
-      <mat-form-field>
-        <mat-label>Suspension</mat-label>
-        <mat-select
-          [ngModel]="parts().suspension"
-          (ngModelChange)="parts.set({ ...parts(), suspension: $event })"
-        >
-          <mat-option value="stock">Stock</mat-option>
-          <mat-option value="sport">Sport</mat-option>
-          <mat-option value="fully_customizable">Fully Customizable</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <div class="parts-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Suspension</mat-label>
+            <mat-select
+              [ngModel]="parts().suspension"
+              (ngModelChange)="updatePart('suspension', $event)"
+            >
+              @for (option of suspensionOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Differential</mat-label>
-        <mat-select
-          [ngModel]="parts().differential"
-          (ngModelChange)="parts.set({ ...parts(), differential: $event })"
-        >
-          <mat-option value="stock">Stock</mat-option>
-          <mat-option value="lsd">LSD</mat-option>
-          <mat-option value="fully_customizable">Fully Customizable</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-  </mat-card>
+          <mat-form-field appearance="outline">
+            <mat-label>Differential</mat-label>
+            <mat-select
+              [ngModel]="parts().differential"
+              (ngModelChange)="updatePart('differential', $event)"
+            >
+              @for (option of differentialOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-    <mat-form-field appearance="outline">
-  <mat-label>Choisir un circuit</mat-label>
-  <mat-select
-    [ngModel]="selectedTrackId()"
-    (ngModelChange)="selectedTrackId.set($event)"
-    >
-      <mat-option value="">Aucun</mat-option>
+          <mat-form-field appearance="outline">
+            <mat-label>Transmission</mat-label>
+            <mat-select
+              [ngModel]="parts().transmission"
+              (ngModelChange)="updatePart('transmission', $event)"
+            >
+              @for (option of transmissionOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-      @for (track of tracks(); track track._id) {
-        <mat-option [value]="track._id">
-          {{ track.name }}
-        </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  @if (analysis(); as tuning) {
-  <mat-card class="analysis-card">
-    <mat-card-title>Analyse tuning</mat-card-title>
+          <mat-form-field appearance="outline">
+            <mat-label>Aéro</mat-label>
+            <mat-select
+              [ngModel]="parts().aero"
+              (ngModelChange)="updatePart('aero', $event)"
+            >
+              @for (option of aeroOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-    <div class="analysis-section">
-      <span>Comportement probable</span>
-      <strong>{{ tuning.behavior }}</strong>
-    </div>
+          <mat-form-field appearance="outline">
+            <mat-label>Freins</mat-label>
+            <mat-select
+              [ngModel]="parts().brakes"
+              (ngModelChange)="updatePart('brakes', $event)"
+            >
+              @for (option of brakeOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-    <div class="analysis-grid">
-      <div>
-        <h3>Risques</h3>
-        @for (risk of tuning.risks; track risk) {
-          <p>• {{ risk }}</p>
+          <mat-form-field appearance="outline">
+            <mat-label>Pneus</mat-label>
+            <mat-select
+              [ngModel]="parts().tires"
+              (ngModelChange)="updatePart('tires', $event)"
+            >
+              @for (option of tireOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>ECU</mat-label>
+            <mat-select
+              [ngModel]="parts().ecu"
+              (ngModelChange)="updatePart('ecu', $event)"
+            >
+              @for (option of ecuOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Limiteur de puissance</mat-label>
+            <mat-select
+              [ngModel]="parts().powerRestrictor"
+              (ngModelChange)="updatePart('powerRestrictor', $event)"
+            >
+              <mat-option [value]="false">Non installé</mat-option>
+              <mat-option [value]="true">Installé</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Ballast</mat-label>
+            <mat-select
+              [ngModel]="parts().ballast"
+              (ngModelChange)="updatePart('ballast', $event)"
+            >
+              <mat-option [value]="false">Non installé</mat-option>
+              <mat-option [value]="true">Installé</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card>
+
+      <mat-card class="config-card">
+        <mat-card-title>Contexte circuit</mat-card-title>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Choisir un circuit</mat-label>
+          <mat-select
+            [ngModel]="selectedTrackId()"
+            (ngModelChange)="selectedTrackId.set($event)"
+          >
+            <mat-option value="">Aucun</mat-option>
+
+            @for (track of tracks(); track track._id) {
+              <mat-option [value]="track._id">
+                {{ track.name }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (selectedTrack(); as track) {
+          <div class="selected-track">
+            <span>{{ track.category || 'unknown' }}</span>
+            <strong>{{ track.name }}</strong>
+            <p>
+              {{ track.lengthMeters || '—' }} m ·
+              {{ track.trackType || '—' }} ·
+              Pluie : {{ track.rain === true ? 'Oui' : track.rain === false ? 'Non' : '—' }}
+            </p>
+          </div>
         }
-      </div>
+      </mat-card>
+    </section>
 
-      <div>
-        <h3>Priorités</h3>
-        @for (priority of tuning.priorities; track priority) {
-          <p>• {{ priority }}</p>
-        }
-      </div>
+    @if (analysis(); as tuning) {
+      <mat-card class="analysis-card">
+        <mat-card-title>Analyse tuning</mat-card-title>
 
-      <div>
-        <h3>Recommandations</h3>
-        @for (recommendation of tuning.recommendations; track recommendation) {
-          <p>• {{ recommendation }}</p>
-        }
-      </div>
-    </div>
-  </mat-card>
-}
+        <div class="analysis-section">
+          <span>Comportement probable</span>
+          <strong>{{ tuning.behavior }}</strong>
+        </div>
+
+        <div class="analysis-grid">
+          <div>
+            <h3>Risques</h3>
+            @for (risk of tuning.risks; track risk) {
+              <p>• {{ risk }}</p>
+            }
+          </div>
+
+          <div>
+            <h3>Priorités</h3>
+            @for (priority of tuning.priorities; track priority) {
+              <p>• {{ priority }}</p>
+            }
+          </div>
+
+          @if (tuning.requiredParts.length) {
+            <div>
+              <h3>Pièces conseillées</h3>
+              @for (part of tuning.requiredParts; track part) {
+                <p>• {{ part }}</p>
+              }
+            </div>
+          }
+
+          <div>
+            <h3>Recommandations</h3>
+            @for (recommendation of tuning.recommendations; track recommendation) {
+              <p>• {{ recommendation }}</p>
+            }
+          </div>
+        </div>
+      </mat-card>
+    }
 
     <section class="stats-grid">
-      <mat-card>
-        <span>PP</span>
-        <strong>{{ currentCar.normalized?.pp || '—' }}</strong>
-      </mat-card>
-
-      <mat-card>
-        <span>Année</span>
-        <strong>{{ currentCar.normalized?.year || '—' }}</strong>
-      </mat-card>
-
-      <mat-card>
-        <span>Puissance</span>
-        <strong>{{ currentCar.normalized?.powerHp || '—' }} PS</strong>
-      </mat-card>
-
-      <mat-card>
-        <span>Poids</span>
-        <strong>{{ currentCar.normalized?.weightKg || '—' }} kg</strong>
-      </mat-card>
-
-      <mat-card>
-        <span>Couple</span>
-        <strong>{{ currentCar.normalized?.torque || '—' }}</strong>
-      </mat-card>
-
-      <mat-card>
-        <span>Poids / puissance</span>
-        <strong>{{ currentCar.normalized?.metrics?.weightToPower || '—' }} kg/PS</strong>
-      </mat-card>
+      <mat-card><span>PP</span><strong>{{ currentCar.normalized?.pp || '—' }}</strong></mat-card>
+      <mat-card><span>Année</span><strong>{{ currentCar.normalized?.year || '—' }}</strong></mat-card>
+      <mat-card><span>Puissance</span><strong>{{ currentCar.normalized?.powerHp || '—' }} PS</strong></mat-card>
+      <mat-card><span>Poids</span><strong>{{ currentCar.normalized?.weightKg || '—' }} kg</strong></mat-card>
+      <mat-card><span>Couple</span><strong>{{ currentCar.normalized?.torque || '—' }}</strong></mat-card>
+      <mat-card><span>Poids / puissance</span><strong>{{ currentCar.normalized?.metrics?.weightToPower || '—' }} kg/PS</strong></mat-card>
     </section>
 
     <section class="details-grid">
