@@ -240,7 +240,74 @@
               <p>• {{ recommendation }}</p>
             }
           </div>
+          
         </div>
+        <div>
+            <h3>Valeurs de base</h3>
+
+            <p>• Pneus : {{ tuning.setupValues.tires }}</p>
+
+            @if (tuning.setupValues.aero) {
+              <p>• Aéro avant : {{ tuning.setupValues.aero.front }}</p>
+              <p>• Aéro arrière : {{ tuning.setupValues.aero.rear }}</p>
+            }
+
+            @if (tuning.setupValues.rideHeight) {
+              <p>• Hauteur avant : {{ tuning.setupValues.rideHeight.front }}</p>
+              <p>• Hauteur arrière : {{ tuning.setupValues.rideHeight.rear }}</p>
+            }
+
+            @if (tuning.setupValues.naturalFrequency) {
+              <p>• Natural Frequency avant : {{ tuning.setupValues.naturalFrequency.front }}</p>
+              <p>• Natural Frequency arrière : {{ tuning.setupValues.naturalFrequency.rear }}</p>
+            }
+
+            @if (tuning.setupValues.antiRollBars) {
+              <p>• ARB avant : {{ tuning.setupValues.antiRollBars.front }}</p>
+              <p>• ARB arrière : {{ tuning.setupValues.antiRollBars.rear }}</p>
+            }
+
+            @if (tuning.setupValues.dampers) {
+              <p>• Compression avant : {{ tuning.setupValues.dampers.frontCompression }}</p>
+              <p>• Compression arrière : {{ tuning.setupValues.dampers.rearCompression }}</p>
+              <p>• Expansion avant : {{ tuning.setupValues.dampers.frontExpansion }}</p>
+              <p>• Expansion arrière : {{ tuning.setupValues.dampers.rearExpansion }}</p>
+            }
+
+            @if (tuning.setupValues.camber) {
+              <p>• Carrossage avant : {{ tuning.setupValues.camber.front }}</p>
+              <p>• Carrossage arrière : {{ tuning.setupValues.camber.rear }}</p>
+            }
+
+            @if (tuning.setupValues.toe) {
+              <p>• Toe avant : {{ tuning.setupValues.toe.front }}</p>
+              <p>• Toe arrière : {{ tuning.setupValues.toe.rear }}</p>
+            }
+
+            @if (tuning.setupValues.lsd) {
+              @if (tuning.setupValues.lsd.front && tuning.setupValues.lsd.rear) {
+                <p>• LSD avant : Init {{ tuning.setupValues.lsd.front.initial }},
+                  Accel {{ tuning.setupValues.lsd.front.acceleration }},
+                  Braking {{ tuning.setupValues.lsd.front.braking }}
+                </p>
+                <p>• LSD arrière : Init {{ tuning.setupValues.lsd.rear.initial }},
+                  Accel {{ tuning.setupValues.lsd.rear.acceleration }},
+                  Braking {{ tuning.setupValues.lsd.rear.braking }}
+                </p>
+                <p>• Répartition centrale : {{ tuning.setupValues.lsd.centerSplit }}</p>
+              } @else {
+                <p>• LSD initial : {{ tuning.setupValues.lsd.initial }}</p>
+                <p>• LSD accélération : {{ tuning.setupValues.lsd.acceleration }}</p>
+                <p>• LSD freinage : {{ tuning.setupValues.lsd.braking }}</p>
+              }
+            }
+
+            @if (tuning.setupValues.transmission) {
+              <p>• Transmission : {{ tuning.setupValues.transmission }}</p>
+            }
+
+            <p>• Brake Balance : {{ tuning.setupValues.brakeBalance }}</p>
+          </div>
       </mat-card>
     }
 
