@@ -19,6 +19,36 @@
       </div>
     </section>
 
+    <mat-card>
+    <mat-card-title>Configuration voiture</mat-card-title>
+
+    <div class="parts-grid">
+      <mat-form-field>
+        <mat-label>Suspension</mat-label>
+        <mat-select
+          [ngModel]="parts().suspension"
+          (ngModelChange)="parts.set({ ...parts(), suspension: $event })"
+        >
+          <mat-option value="stock">Stock</mat-option>
+          <mat-option value="sport">Sport</mat-option>
+          <mat-option value="fully_customizable">Fully Customizable</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Differential</mat-label>
+        <mat-select
+          [ngModel]="parts().differential"
+          (ngModelChange)="parts.set({ ...parts(), differential: $event })"
+        >
+          <mat-option value="stock">Stock</mat-option>
+          <mat-option value="lsd">LSD</mat-option>
+          <mat-option value="fully_customizable">Fully Customizable</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-card>
+
     <mat-form-field appearance="outline">
   <mat-label>Choisir un circuit</mat-label>
   <mat-select

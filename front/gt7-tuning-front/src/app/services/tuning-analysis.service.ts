@@ -13,7 +13,7 @@ export interface TuningAnalysis {
   providedIn: 'root'
 })
 export class TuningAnalysisService {
-  analyze(car: Car, track?: Track | null): TuningAnalysis {
+  analyze(car: Car, track?: Track | null, parts?: any): TuningAnalysis {
     const drivetrain = car.normalized?.drivetrain;
     const category = track?.category;
 
@@ -34,6 +34,15 @@ export class TuningAnalysisService {
     if (drivetrain === 'RWD') {
       behavior = 'Tendance possible au survirage';
       risks.push('Perte de motricité en sortie de virage');
+      if (parts?.differential !== 'fully_customizable') {
+        recommendations.push(
+          'Installer un différentiel entièrement personnalisable pour améliorer la motricité'
+        );
+      } else {
+        recommendations.push(
+          'Réduire le LSD accélération pour limiter le survirage'
+        );
+      }
       priorities.push('Stabiliser le train arrière');
       recommendations.push('Réduire progressivement le LSD accélération si la voiture glisse en sortie');
       recommendations.push('Assouplir légèrement l’arrière si la voiture est trop nerveuse');

@@ -23,6 +23,12 @@ export class CarDetailComponent implements OnInit {
   car = signal<Car | null>(null);
   selectedTrackId = signal('');
   tracks = signal<Track[]>([]);
+  parts = signal({
+  suspension: 'stock',
+  differential: 'stock',
+  transmission: 'stock',
+  tires: 'Sport Soft'
+});
 
   constructor(
     private route: ActivatedRoute,
@@ -56,7 +62,8 @@ export class CarDetailComponent implements OnInit {
       return null;
     }
 
-    return this.tuningAnalysisService.analyze(currentCar, this.selectedTrack());
+    return this.tuningAnalysisService.analyze(currentCar, this.selectedTrack(),
+    this.parts());
   });
 
 }
