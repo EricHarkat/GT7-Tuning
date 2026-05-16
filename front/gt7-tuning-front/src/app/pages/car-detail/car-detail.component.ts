@@ -59,6 +59,7 @@ export class CarDetailComponent implements OnInit {
   setupName = signal('');
   setupNotes = signal('');
   showSaveForm = signal(false);
+  showAnalysis = signal(false);
 
   readonly symptomOptions: SymptomOption[] = SYMPTOM_OPTIONS;
 

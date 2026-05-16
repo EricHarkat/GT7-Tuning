@@ -2,15 +2,14 @@
   <div class="page">
     <button mat-button routerLink="/cars">← Retour aux voitures</button>
 
+    <!-- HERO -->
     <section class="hero">
       @if (currentCar.imageUrl) {
         <img [src]="currentCar.imageUrl" [alt]="currentCar.name" />
       }
-
       <div class="hero-content">
         <p class="manufacturer">{{ currentCar.manufacturer }}</p>
         <h1>{{ currentCar.name }}</h1>
-
         <div class="badges">
           <span>{{ currentCar.category || 'Unknown' }}</span>
           <span>{{ currentCar.engineType || '—' }}</span>
@@ -19,53 +18,32 @@
       </div>
     </section>
 
-    @if (guidedSteps().length) {
-  <mat-card class="guided-card">
-    <mat-card-title>Guide de réglage</mat-card-title>
+    <!-- STATS RAPIDES -->
+    <section class="stats-grid">
+      <mat-card><span>PP</span><strong>{{ currentCar.normalized?.pp || '—' }}</strong></mat-card>
+      <mat-card><span>Puissance</span><strong>{{ currentCar.normalized?.powerHp || '—' }} PS</strong></mat-card>
+      <mat-card><span>Poids</span><strong>{{ currentCar.normalized?.weightKg || '—' }} kg</strong></mat-card>
+      <mat-card><span>Poids / puissance</span><strong>{{ currentCar.normalized?.metrics?.weightToPower || '—' }} kg/PS</strong></mat-card>
+      <mat-card><span>Couple</span><strong>{{ currentCar.normalized?.torque || '—' }}</strong></mat-card>
+      <mat-card><span>Année</span><strong>{{ currentCar.normalized?.year || '—' }}</strong></mat-card>
+    </section>
 
-    @if (currentStep(); as step) {
-  <div class="step">
-    <h3>Étape {{ step.id }} — {{ step.title }}</h3>
-    <p>{{ step.description }}</p>
-
-    @for (rec of step.recommendations; track rec) {
-      <p class="rec">• {{ rec }}</p>
-    }
-
-    <div class="step-actions">
-      <button
-        mat-button
-        (click)="prevStep()"
-        [disabled]="currentStepIndex() === 0"
-      >
-        ← Précédent
-      </button>
-
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="nextStep()"
-        [disabled]="currentStepIndex() === guidedSteps().length - 1"
-      >
-        Suivant →
-      </button>
+    <!-- ÉTAPE 1 : CONFIGURATION -->
+    <div class="section-header">
+      <span class="step-num">1</span>
+      <div>
+        <h2>Configuration des pièces</h2>
+        <p>Indique les pièces installées sur ta voiture pour affiner le diagnostic.</p>
+      </div>
     </div>
-  </div>
-}
-  </mat-card>
-}
 
     <section class="config-grid">
       <mat-card class="config-card">
-        <mat-card-title>Configuration voiture</mat-card-title>
-
+        <mat-card-title>Pièces installées</mat-card-title>
         <div class="parts-grid">
           <mat-form-field appearance="outline">
             <mat-label>Suspension</mat-label>
-            <mat-select
-              [ngModel]="parts().suspension"
-              (ngModelChange)="updatePart('suspension', $event)"
-            >
+            <mat-select [ngModel]="parts().suspension" (ngModelChange)="updatePart('suspension', $event)">
               @for (option of suspensionOptions; track option.value) {
                 <mat-option [value]="option.value">{{ option.label }}</mat-option>
               }
@@ -73,11 +51,8 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Differential</mat-label>
-            <mat-select
-              [ngModel]="parts().differential"
-              (ngModelChange)="updatePart('differential', $event)"
-            >
+            <mat-label>Différentiel</mat-label>
+            <mat-select [ngModel]="parts().differential" (ngModelChange)="updatePart('differential', $event)">
               @for (option of differentialOptions; track option.value) {
                 <mat-option [value]="option.value">{{ option.label }}</mat-option>
               }
@@ -86,10 +61,7 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Transmission</mat-label>
-            <mat-select
-              [ngModel]="parts().transmission"
-              (ngModelChange)="updatePart('transmission', $event)"
-            >
+            <mat-select [ngModel]="parts().transmission" (ngModelChange)="updatePart('transmission', $event)">
               @for (option of transmissionOptions; track option.value) {
                 <mat-option [value]="option.value">{{ option.label }}</mat-option>
               }
@@ -97,11 +69,17 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Aéro</mat-label>
-            <mat-select
-              [ngModel]="parts().aero"
-              (ngModelChange)="updatePart('aero', $event)"
-            >
+            <mat-label>Pneus</mat-label>
+            <mat-select [ngModel]="parts().tires" (ngModelChange)="updatePart('tires', $event)">
+              @for (option of tireOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Aérodynamique</mat-label>
+            <mat-select [ngModel]="parts().aero" (ngModelChange)="updatePart('aero', $event)">
               @for (option of aeroOptions; track option.value) {
                 <mat-option [value]="option.value">{{ option.label }}</mat-option>
               }
@@ -110,79 +88,58 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Freins</mat-label>
-            <mat-select
-              [ngModel]="parts().brakes"
-              (ngModelChange)="updatePart('brakes', $event)"
-            >
+            <mat-select [ngModel]="parts().brakes" (ngModelChange)="updatePart('brakes', $event)">
               @for (option of brakeOptions; track option.value) {
                 <mat-option [value]="option.value">{{ option.label }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Pneus</mat-label>
-            <mat-select
-              [ngModel]="parts().tires"
-              (ngModelChange)="updatePart('tires', $event)"
-            >
-              @for (option of tireOptions; track option.value) {
-                <mat-option [value]="option.value">{{ option.label }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>ECU</mat-label>
-            <mat-select
-              [ngModel]="parts().ecu"
-              (ngModelChange)="updatePart('ecu', $event)"
-            >
-              @for (option of ecuOptions; track option.value) {
-                <mat-option [value]="option.value">{{ option.label }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Limiteur de puissance</mat-label>
-            <mat-select
-              [ngModel]="parts().powerRestrictor"
-              (ngModelChange)="updatePart('powerRestrictor', $event)"
-            >
-              <mat-option [value]="false">Non installé</mat-option>
-              <mat-option [value]="true">Installé</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Ballast</mat-label>
-            <mat-select
-              [ngModel]="parts().ballast"
-              (ngModelChange)="updatePart('ballast', $event)"
-            >
-              <mat-option [value]="false">Non installé</mat-option>
-              <mat-option [value]="true">Installé</mat-option>
-            </mat-select>
-          </mat-form-field>
         </div>
+
+        <details class="advanced-parts">
+          <summary>Options avancées</summary>
+          <div class="parts-grid parts-grid--advanced">
+            <mat-form-field appearance="outline">
+              <mat-label>ECU</mat-label>
+              <mat-select [ngModel]="parts().ecu" (ngModelChange)="updatePart('ecu', $event)">
+                @for (option of ecuOptions; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Limiteur de puissance</mat-label>
+              <mat-select [ngModel]="parts().powerRestrictor" (ngModelChange)="updatePart('powerRestrictor', $event)">
+                <mat-option [value]="false">Non installé</mat-option>
+                <mat-option [value]="true">Installé</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Ballast</mat-label>
+              <mat-select [ngModel]="parts().ballast" (ngModelChange)="updatePart('ballast', $event)">
+                <mat-option [value]="false">Non installé</mat-option>
+                <mat-option [value]="true">Installé</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </details>
       </mat-card>
 
-      <mat-card class="config-card">
-        <mat-card-title>Contexte circuit</mat-card-title>
+      <!-- ÉTAPE 2 : CIRCUIT (dans la même grille) -->
+      <mat-card class="config-card track-card">
+        <div class="step-inline-label">
+          <span class="step-num step-num--sm">2</span>
+          <mat-card-title>Circuit</mat-card-title>
+        </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Choisir un circuit</mat-label>
-          <mat-select
-            [ngModel]="selectedTrackId()"
-            (ngModelChange)="selectedTrackId.set($event)"
-          >
+          <mat-select [ngModel]="selectedTrackId()" (ngModelChange)="selectedTrackId.set($event)">
             <mat-option value="">Aucun</mat-option>
-
             @for (track of tracks(); track track._id) {
-              <mat-option [value]="track._id">
-                {{ track.name }}
-              </mat-option>
+              <mat-option [value]="track._id">{{ track.name }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -201,10 +158,16 @@
       </mat-card>
     </section>
 
-    <mat-card class="feedback-card">
-      <mat-card-title>Ce que j'observe sur la piste</mat-card-title>
-      <p class="feedback-hint">Selectionne les comportements que tu constates — les recommandations s'adapteront.</p>
+    <!-- ÉTAPE 3 : SYMPTÔMES -->
+    <div class="section-header">
+      <span class="step-num">3</span>
+      <div>
+        <h2>Ce que j'observe sur la piste</h2>
+        <p>Sélectionne les comportements constatés — les recommandations s'adapteront automatiquement.</p>
+      </div>
+    </div>
 
+    <mat-card class="feedback-card">
       <div class="symptoms-grid">
         @for (option of symptomOptions; track option.key) {
           <div class="symptom-row">
@@ -221,9 +184,9 @@
                 [value]="symptomSeverities()[option.key] ?? 2"
                 (change)="setSeverity(option.key, $event.value)"
               >
-                <mat-button-toggle [value]="1">Leger</mat-button-toggle>
-                <mat-button-toggle [value]="2">Modere</mat-button-toggle>
-                <mat-button-toggle [value]="3">Severe</mat-button-toggle>
+                <mat-button-toggle [value]="1">Léger</mat-button-toggle>
+                <mat-button-toggle [value]="2">Modéré</mat-button-toggle>
+                <mat-button-toggle [value]="3">Sévère</mat-button-toggle>
               </mat-button-toggle-group>
             }
           </div>
@@ -231,15 +194,22 @@
       </div>
     </mat-card>
 
+    <!-- ÉTAPE 4 : DIAGNOSTIC -->
     @if (diagnosticResults().length) {
-      <mat-card class="diagnostic-card">
-        <mat-card-title>Diagnostic cible</mat-card-title>
+      <div class="section-header section-header--accent">
+        <span class="step-num step-num--accent">4</span>
+        <div>
+          <h2>Diagnostic ciblé</h2>
+          <p>Recommandations spécifiques basées sur tes symptômes.</p>
+        </div>
+      </div>
 
+      <mat-card class="diagnostic-card">
         @if (diagnosticConflicts().length) {
           <div class="conflict-banner">
             <mat-icon>warning</mat-icon>
             <div>
-              <strong>Symptomes contradictoires detectes</strong>
+              <strong>Symptômes contradictoires détectés</strong>
               @for (conflict of diagnosticConflicts(); track conflict) {
                 <p>• {{ conflict }}</p>
               }
@@ -263,116 +233,35 @@
       </mat-card>
     }
 
-    @if (analysis(); as tuning) {
-      <mat-card class="analysis-card">
-        <mat-card-title>Analyse tuning</mat-card-title>
+    <!-- GUIDE DE RÉGLAGE -->
+    @if (guidedSteps().length) {
+      <mat-card class="guided-card">
+        <mat-card-title>Guide de réglage étape par étape</mat-card-title>
 
-        <div class="analysis-section">
-          <span>Comportement probable</span>
-          <strong>{{ tuning.behavior }}</strong>
-        </div>
-
-        <div class="analysis-grid">
-          <div>
-            <h3>Risques</h3>
-            @for (risk of tuning.risks; track risk) {
-              <p>• {{ risk }}</p>
-            }
-          </div>
-
-          <div>
-            <h3>Priorités</h3>
-            @for (priority of tuning.priorities; track priority) {
-              <p>• {{ priority }}</p>
-            }
-          </div>
-
-          @if (tuning.requiredParts.length) {
-            <div>
-              <h3>Pièces conseillées</h3>
-              @for (part of tuning.requiredParts; track part) {
-                <p>• {{ part }}</p>
-              }
+        @if (currentStep(); as step) {
+          <div class="step-progress">
+            <span>Étape {{ currentStepIndex() + 1 }} / {{ guidedSteps().length }}</span>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="(currentStepIndex() + 1) / guidedSteps().length * 100"></div>
             </div>
-          }
-
-          <div>
-            <h3>Recommandations</h3>
-            @for (recommendation of tuning.recommendations; track recommendation) {
-              <p>• {{ recommendation }}</p>
-            }
           </div>
-          
-        </div>
-        <div>
-            <h3>Valeurs de base</h3>
 
-            <p>• Pneus : {{ tuning.setupValues.tires }}</p>
-
-            @if (tuning.setupValues.aero) {
-              <p>• Aéro avant : {{ tuning.setupValues.aero.front }}</p>
-              <p>• Aéro arrière : {{ tuning.setupValues.aero.rear }}</p>
+          <div class="step">
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+            @for (rec of step.recommendations; track rec) {
+              <p class="rec">• {{ rec }}</p>
             }
-
-            @if (tuning.setupValues.rideHeight) {
-              <p>• Hauteur avant : {{ tuning.setupValues.rideHeight.front }}</p>
-              <p>• Hauteur arrière : {{ tuning.setupValues.rideHeight.rear }}</p>
-            }
-
-            @if (tuning.setupValues.naturalFrequency) {
-              <p>• Natural Frequency avant : {{ tuning.setupValues.naturalFrequency.front }}</p>
-              <p>• Natural Frequency arrière : {{ tuning.setupValues.naturalFrequency.rear }}</p>
-            }
-
-            @if (tuning.setupValues.antiRollBars) {
-              <p>• ARB avant : {{ tuning.setupValues.antiRollBars.front }}</p>
-              <p>• ARB arrière : {{ tuning.setupValues.antiRollBars.rear }}</p>
-            }
-
-            @if (tuning.setupValues.dampers) {
-              <p>• Compression avant : {{ tuning.setupValues.dampers.frontCompression }}</p>
-              <p>• Compression arrière : {{ tuning.setupValues.dampers.rearCompression }}</p>
-              <p>• Expansion avant : {{ tuning.setupValues.dampers.frontExpansion }}</p>
-              <p>• Expansion arrière : {{ tuning.setupValues.dampers.rearExpansion }}</p>
-            }
-
-            @if (tuning.setupValues.camber) {
-              <p>• Carrossage avant : {{ tuning.setupValues.camber.front }}</p>
-              <p>• Carrossage arrière : {{ tuning.setupValues.camber.rear }}</p>
-            }
-
-            @if (tuning.setupValues.toe) {
-              <p>• Toe avant : {{ tuning.setupValues.toe.front }}</p>
-              <p>• Toe arrière : {{ tuning.setupValues.toe.rear }}</p>
-            }
-
-            @if (tuning.setupValues.lsd) {
-              @if (tuning.setupValues.lsd.front && tuning.setupValues.lsd.rear) {
-                <p>• LSD avant : Init {{ tuning.setupValues.lsd.front.initial }},
-                  Accel {{ tuning.setupValues.lsd.front.acceleration }},
-                  Freinage {{ tuning.setupValues.lsd.front.braking }}
-                </p>
-                <p>• LSD arrière : Init {{ tuning.setupValues.lsd.rear.initial }},
-                  Accel {{ tuning.setupValues.lsd.rear.acceleration }},
-                  Freinage {{ tuning.setupValues.lsd.rear.braking }}
-                </p>
-                <p>• Répartition centrale : {{ tuning.setupValues.lsd.centerSplit }}</p>
-              } @else {
-                <p>• LSD initial : {{ tuning.setupValues.lsd.initial }}</p>
-                <p>• LSD accélération : {{ tuning.setupValues.lsd.acceleration }}</p>
-                <p>• LSD freinage : {{ tuning.setupValues.lsd.braking }}</p>
-              }
-            }
-
-            @if (tuning.setupValues.transmission) {
-              <p>• Transmission : {{ tuning.setupValues.transmission }}</p>
-            }
-
-            <p>• Brake Balance : {{ tuning.setupValues.brakeBalance }}</p>
+            <div class="step-actions">
+              <button mat-button (click)="prevStep()" [disabled]="currentStepIndex() === 0">← Précédent</button>
+              <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="currentStepIndex() === guidedSteps().length - 1">Suivant →</button>
+            </div>
           </div>
+        }
       </mat-card>
     }
 
+    <!-- SETUPS SAUVEGARDÉS -->
     <mat-card class="save-card">
       <div class="save-header">
         <mat-card-title>Setups sauvegardés</mat-card-title>
@@ -388,12 +277,10 @@
             <mat-label>Nom du setup</mat-label>
             <input matInput [ngModel]="setupName()" (ngModelChange)="setupName.set($event)" placeholder="ex. Nurburgring agressif" />
           </mat-form-field>
-
           <mat-form-field appearance="outline" class="save-notes-field">
             <mat-label>Notes (facultatif)</mat-label>
             <textarea matInput [ngModel]="setupNotes()" (ngModelChange)="setupNotes.set($event)" rows="2" placeholder="ex. Sous-vire encore en S2, à revoir..."></textarea>
           </mat-form-field>
-
           <button mat-raised-button color="primary" [disabled]="!setupName().trim()" (click)="saveSetup()">
             <mat-icon>save</mat-icon>
             Sauvegarder
@@ -409,7 +296,6 @@
                 <strong>{{ setup.name }}</strong>
                 <span class="setup-date">{{ setup.savedAt | date:'dd/MM/yyyy HH:mm' }}</span>
               </div>
-
               <div class="setup-tags">
                 @if (setup.trackName) {
                   <span class="tag tag-track">{{ setup.trackName }}</span>
@@ -420,11 +306,9 @@
                   <span class="tag tag-symptom">{{ symptom }}</span>
                 }
               </div>
-
               @if (setup.notes) {
                 <p class="setup-notes">{{ setup.notes }}</p>
               }
-
               <div class="setup-actions">
                 <button mat-stroked-button color="primary" (click)="loadSetup(setup)">
                   <mat-icon>upload</mat-icon>
@@ -442,19 +326,110 @@
       }
     </mat-card>
 
-    <section class="stats-grid">
-      <mat-card><span>PP</span><strong>{{ currentCar.normalized?.pp || '—' }}</strong></mat-card>
-      <mat-card><span>Année</span><strong>{{ currentCar.normalized?.year || '—' }}</strong></mat-card>
-      <mat-card><span>Puissance</span><strong>{{ currentCar.normalized?.powerHp || '—' }} PS</strong></mat-card>
-      <mat-card><span>Poids</span><strong>{{ currentCar.normalized?.weightKg || '—' }} kg</strong></mat-card>
-      <mat-card><span>Couple</span><strong>{{ currentCar.normalized?.torque || '—' }}</strong></mat-card>
-      <mat-card><span>Poids / puissance</span><strong>{{ currentCar.normalized?.metrics?.weightToPower || '—' }} kg/PS</strong></mat-card>
-    </section>
+    <!-- ANALYSE GÉNÉRALE (collapsible, secondaire) -->
+    @if (analysis(); as tuning) {
+      <mat-card class="analysis-card">
+        <div class="analysis-toggle" (click)="showAnalysis.set(!showAnalysis())">
+          <div class="analysis-toggle-left">
+            <mat-icon>insights</mat-icon>
+            <span>Analyse générale du setup</span>
+            <span class="analysis-behavior-preview">{{ tuning.behavior }}</span>
+          </div>
+          <mat-icon>{{ showAnalysis() ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
 
+        @if (showAnalysis()) {
+          <div class="analysis-section">
+            <span>Comportement probable</span>
+            <strong>{{ tuning.behavior }}</strong>
+          </div>
+
+          <div class="analysis-grid">
+            <div>
+              <h3>Risques</h3>
+              @for (risk of tuning.risks; track risk) {
+                <p>• {{ risk }}</p>
+              }
+            </div>
+            <div>
+              <h3>Priorités</h3>
+              @for (priority of tuning.priorities; track priority) {
+                <p>• {{ priority }}</p>
+              }
+            </div>
+            @if (tuning.requiredParts.length) {
+              <div>
+                <h3>Pièces conseillées</h3>
+                @for (part of tuning.requiredParts; track part) {
+                  <p>• {{ part }}</p>
+                }
+              </div>
+            }
+            <div>
+              <h3>Recommandations</h3>
+              @for (recommendation of tuning.recommendations; track recommendation) {
+                <p>• {{ recommendation }}</p>
+              }
+            </div>
+          </div>
+
+          <div class="setup-values">
+            <h3>Valeurs de base</h3>
+            <p>• Pneus : {{ tuning.setupValues.tires }}</p>
+            @if (tuning.setupValues.aero) {
+              <p>• Aéro avant : {{ tuning.setupValues.aero.front }}</p>
+              <p>• Aéro arrière : {{ tuning.setupValues.aero.rear }}</p>
+            }
+            @if (tuning.setupValues.rideHeight) {
+              <p>• Hauteur avant : {{ tuning.setupValues.rideHeight.front }}</p>
+              <p>• Hauteur arrière : {{ tuning.setupValues.rideHeight.rear }}</p>
+            }
+            @if (tuning.setupValues.naturalFrequency) {
+              <p>• Fréq. naturelle avant : {{ tuning.setupValues.naturalFrequency.front }}</p>
+              <p>• Fréq. naturelle arrière : {{ tuning.setupValues.naturalFrequency.rear }}</p>
+            }
+            @if (tuning.setupValues.antiRollBars) {
+              <p>• ARB avant : {{ tuning.setupValues.antiRollBars.front }}</p>
+              <p>• ARB arrière : {{ tuning.setupValues.antiRollBars.rear }}</p>
+            }
+            @if (tuning.setupValues.dampers) {
+              <p>• Compression avant : {{ tuning.setupValues.dampers.frontCompression }}</p>
+              <p>• Compression arrière : {{ tuning.setupValues.dampers.rearCompression }}</p>
+              <p>• Expansion avant : {{ tuning.setupValues.dampers.frontExpansion }}</p>
+              <p>• Expansion arrière : {{ tuning.setupValues.dampers.rearExpansion }}</p>
+            }
+            @if (tuning.setupValues.camber) {
+              <p>• Carrossage avant : {{ tuning.setupValues.camber.front }}</p>
+              <p>• Carrossage arrière : {{ tuning.setupValues.camber.rear }}</p>
+            }
+            @if (tuning.setupValues.toe) {
+              <p>• Toe avant : {{ tuning.setupValues.toe.front }}</p>
+              <p>• Toe arrière : {{ tuning.setupValues.toe.rear }}</p>
+            }
+            @if (tuning.setupValues.lsd) {
+              @if (tuning.setupValues.lsd.front && tuning.setupValues.lsd.rear) {
+                <p>• LSD avant : Init {{ tuning.setupValues.lsd.front.initial }}, Accel {{ tuning.setupValues.lsd.front.acceleration }}, Freinage {{ tuning.setupValues.lsd.front.braking }}</p>
+                <p>• LSD arrière : Init {{ tuning.setupValues.lsd.rear.initial }}, Accel {{ tuning.setupValues.lsd.rear.acceleration }}, Freinage {{ tuning.setupValues.lsd.rear.braking }}</p>
+                <p>• Répartition centrale : {{ tuning.setupValues.lsd.centerSplit }}</p>
+              } @else {
+                <p>• LSD initial : {{ tuning.setupValues.lsd.initial }}</p>
+                <p>• LSD accélération : {{ tuning.setupValues.lsd.acceleration }}</p>
+                <p>• LSD freinage : {{ tuning.setupValues.lsd.braking }}</p>
+              }
+            }
+            @if (tuning.setupValues.transmission) {
+              <p>• Transmission : {{ tuning.setupValues.transmission }}</p>
+            }
+            <p>• Brake Balance : {{ tuning.setupValues.brakeBalance }}</p>
+          </div>
+        }
+      </mat-card>
+    }
+
+    <!-- CARACTÉRISTIQUES TECHNIQUES -->
     <section class="details-grid">
       <mat-card>
         <mat-card-title>Caractéristiques techniques</mat-card-title>
-
         <div class="spec-list">
           <div><span>Moteur</span><strong>{{ currentCar.specs?.['engine_type'] || '—' }}</strong></div>
           <div><span>Aspiration</span><strong>{{ currentCar.specs?.['aspiration'] || '—' }}</strong></div>
@@ -467,7 +442,6 @@
 
       <mat-card>
         <mat-card-title>Dimensions</mat-card-title>
-
         <div class="spec-list">
           <div><span>Longueur</span><strong>{{ currentCar.specs?.['length'] || '—' }}</strong></div>
           <div><span>Largeur</span><strong>{{ currentCar.specs?.['width'] || '—' }}</strong></div>
