@@ -333,6 +333,50 @@
       </mat-card>
     }
 
+    <!-- VALEURS DE DÉPART -->
+    @if (baselineGroups().length) {
+      <mat-card class="baseline-card">
+        <div class="baseline-header">
+          <mat-icon>tune</mat-icon>
+          <div>
+            <mat-card-title>Valeurs de départ recommandées</mat-card-title>
+            <p class="baseline-hint">Points de départ à entrer en jeu avant de rouler. Ajuste ensuite selon les symptômes observés.</p>
+          </div>
+        </div>
+
+        <div class="baseline-groups">
+          @for (group of baselineGroups(); track group.title) {
+            <div class="baseline-group">
+              <h3 class="baseline-group-title">{{ group.title }}</h3>
+              <div class="baseline-rows">
+                @for (row of group.rows; track row.label) {
+                  <div class="baseline-row">
+                    <span class="baseline-label">{{ row.label }}</span>
+
+                    @if (row.front !== undefined && row.rear !== undefined) {
+                      <div class="baseline-fr">
+                        <span class="baseline-val"><em>AV</em> {{ row.front }}</span>
+                        <span class="baseline-val"><em>AR</em> {{ row.rear }}</span>
+                      </div>
+                    }
+                    @if (row.single !== undefined) {
+                      <span class="baseline-single">{{ row.single }}</span>
+                    }
+
+                    <span class="baseline-menu">📍 {{ row.menuPath }}</span>
+
+                    @if (row.note) {
+                      <p class="baseline-note">{{ row.note }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </mat-card>
+    }
+
     <!-- GUIDE DE RÉGLAGE -->
     @if (guidedSteps().length) {
       <mat-card class="guided-card">

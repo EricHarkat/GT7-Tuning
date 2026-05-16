@@ -22,6 +22,7 @@ import {
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { SetupStorageService } from '../../services/setup-storage.service';
 import { PPBudgetService } from '../../services/pp-budget.service';
+import { BaselineSetupService } from '../../services/baseline-setup.service';
 
 import { Car } from '../../models/car';
 import { Track } from '../../models/track';
@@ -137,7 +138,8 @@ export class CarDetailComponent implements OnInit {
     private guidedTuning: GuidedTuning,
     private diagnosticService: DiagnosticService,
     private setupStorage: SetupStorageService,
-    private ppBudgetService: PPBudgetService
+    private ppBudgetService: PPBudgetService,
+    private baselineSetupService: BaselineSetupService
   ) {}
 
   ngOnInit(): void {
@@ -264,6 +266,12 @@ prevStep() {
     const target = this.ppTarget();
     if (!current || !target) return null;
     return this.ppBudgetService.analyze(this.parts(), current, target);
+  });
+
+  baselineGroups = computed(() => {
+    const car = this.car();
+    if (!car) return [];
+    return this.baselineSetupService.generate(car, this.parts(), this.selectedTrack());
   });
 
   effectiveBalance = computed(() => {
