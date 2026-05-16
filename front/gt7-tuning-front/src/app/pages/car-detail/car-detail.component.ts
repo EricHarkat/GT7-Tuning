@@ -20,6 +20,7 @@ import {
 } from '../../services/tuning-analysis.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { SetupStorageService } from '../../services/setup-storage.service';
+import { PPBudgetService } from '../../services/pp-budget.service';
 
 import { Car } from '../../models/car';
 import { Track } from '../../models/track';
@@ -60,6 +61,8 @@ export class CarDetailComponent implements OnInit {
   setupNotes = signal('');
   showSaveForm = signal(false);
   showAnalysis = signal(false);
+  ppTarget = signal<number | null>(null);
+  ppCurrent = signal<number | null>(null);
 
   readonly symptomOptions: SymptomOption[] = SYMPTOM_OPTIONS;
 
@@ -132,7 +135,8 @@ export class CarDetailComponent implements OnInit {
     private tuningAnalysisService: TuningAnalysisService,
     private guidedTuning: GuidedTuning,
     private diagnosticService: DiagnosticService,
-    private setupStorage: SetupStorageService
+    private setupStorage: SetupStorageService,
+    private ppBudgetService: PPBudgetService
   ) {}
 
   ngOnInit(): void {
@@ -253,6 +257,13 @@ prevStep() {
 
   diagnosticResults = computed(() => this.diagnosticOutput()?.results ?? []);
   diagnosticConflicts = computed(() => this.diagnosticOutput()?.conflicts ?? []);
+
+  ppBudget = computed(() => {
+    const current = this.ppCurrent();
+    const target = this.ppTarget();
+    if (!current || !target) return null;
+    return this.ppBudgetService.analyze(this.parts(), current, target);
+  });
 
   toggleSymptom(symptom: Symptom, checked: boolean): void {
     this.selectedSymptoms.update(current =>

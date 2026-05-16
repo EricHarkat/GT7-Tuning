@@ -28,6 +28,59 @@
       <mat-card><span>Année</span><strong>{{ currentCar.normalized?.year || '—' }}</strong></mat-card>
     </section>
 
+    <!-- BUDGET PP -->
+    <mat-card class="pp-card">
+      <div class="pp-inputs">
+        <mat-form-field appearance="outline" class="pp-field">
+          <mat-label>Limite PP de la course</mat-label>
+          <input matInput type="number" [ngModel]="ppTarget()" (ngModelChange)="ppTarget.set($event)" placeholder="ex. 600" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="pp-field">
+          <mat-label>PP actuel de ta voiture (en jeu)</mat-label>
+          <input matInput type="number" [ngModel]="ppCurrent()" (ngModelChange)="ppCurrent.set($event)" placeholder="ex. 612" />
+        </mat-form-field>
+      </div>
+
+      @if (ppBudget(); as budget) {
+        <div class="pp-status" [class.pp-over]="budget.gap > 0" [class.pp-ok]="budget.gap <= 0">
+          <div class="pp-bar-row">
+            <span class="pp-values">{{ ppCurrent() }} PP / {{ ppTarget() }} PP</span>
+            <span class="pp-gap-label" [class.over]="budget.gap > 0">
+              {{ budget.gap > 0 ? '+' + budget.gap + ' PP au-dessus' : (-budget.gap) + ' PP de marge' }}
+            </span>
+          </div>
+          <div class="pp-bar">
+            <div class="pp-fill"
+              [style.width.%]="[100]"
+              [class.pp-fill--over]="budget.gap > 0">
+            </div>
+            @if (budget.gap <= 0) {
+              <div class="pp-fill pp-fill--used"
+                [style.width.%]="(ppCurrent()! / ppTarget()!) * 100">
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (budget.gap > 0 && budget.suggestions.length) {
+          <div class="pp-suggestions">
+            <p class="pp-suggestions-title">Pour gagner {{ budget.gap }} PP, tu peux dégrader :</p>
+            @for (s of budget.suggestions; track s.partLabel) {
+              <div class="pp-suggestion-row">
+                <span class="pp-part">{{ s.partLabel }}</span>
+                <span class="pp-change">{{ s.fromLabel }} → {{ s.toLabel }}</span>
+                <span class="pp-saving">−{{ s.saving }} PP</span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (budget.gap <= 0) {
+          <p class="pp-ok-msg"><mat-icon>check_circle</mat-icon> Dans les limites — tu as {{ -budget.gap }} PP de marge.</p>
+        }
+      }
+    </mat-card>
+
     <!-- ÉTAPE 1 : CONFIGURATION -->
     <div class="section-header">
       <span class="step-num">1</span>
