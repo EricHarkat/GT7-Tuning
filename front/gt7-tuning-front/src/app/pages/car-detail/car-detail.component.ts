@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { CarService } from '../../services/car.services';
 import { TrackService } from '../../services/track.services';
@@ -13,10 +14,12 @@ import {
   InstalledParts,
   TuningAnalysisService
 } from '../../services/tuning-analysis.service';
+import { DiagnosticService } from '../../services/diagnostic.service';
 
 import { Car } from '../../models/car';
 import { Track } from '../../models/track';
 import { GuidedTuning, TuningStep } from '../../services/guided-tuning';
+import { Symptom, SYMPTOM_OPTIONS, SymptomOption } from '../../models/behavior-feedback';
 
 @Component({
   selector: 'app-car-detail',
@@ -28,7 +31,8 @@ import { GuidedTuning, TuningStep } from '../../services/guided-tuning';
     RouterLink,
     FormsModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCheckboxModule
   ]
 })
 export class CarDetailComponent implements OnInit {
@@ -37,6 +41,9 @@ export class CarDetailComponent implements OnInit {
   tracks = signal<Track[]>([]);
   selectedTrackId = signal('');
   currentStepIndex = signal(0);
+  selectedSymptoms = signal<Symptom[]>([]);
+
+  readonly symptomOptions: SymptomOption[] = SYMPTOM_OPTIONS;
 
   parts = signal<InstalledParts>({
     suspension: 'stock',
@@ -105,7 +112,8 @@ export class CarDetailComponent implements OnInit {
     private carService: CarService,
     private trackService: TrackService,
     private tuningAnalysisService: TuningAnalysisService,
-    private guidedTuning: GuidedTuning
+    private guidedTuning: GuidedTuning,
+    private diagnosticService: DiagnosticService
   ) {}
 
   ngOnInit(): void {
@@ -170,6 +178,22 @@ prevStep() {
     this.currentStepIndex.update(v => v - 1);
   }
 }
+
+  diagnosticResults = computed(() => {
+    const car = this.car();
+    if (!car) return [];
+    return this.diagnosticService.diagnose(
+      this.selectedSymptoms(),
+      car,
+      this.parts()
+    );
+  });
+
+  toggleSymptom(symptom: Symptom, checked: boolean): void {
+    this.selectedSymptoms.update(current =>
+      checked ? [...current, symptom] : current.filter(s => s !== symptom)
+    );
+  }
 
   updatePart<K extends keyof InstalledParts>(
     key: K,

@@ -201,6 +201,37 @@
       </mat-card>
     </section>
 
+    <mat-card class="feedback-card">
+      <mat-card-title>Ce que j'observe sur la piste</mat-card-title>
+      <p class="feedback-hint">Selectionne les comportements que tu constates — les recommandations s'adapteront.</p>
+
+      <div class="symptoms-grid">
+        @for (option of symptomOptions; track option.key) {
+          <mat-checkbox
+            [checked]="selectedSymptoms().includes(option.key)"
+            (change)="toggleSymptom(option.key, $event.checked)"
+          >
+            {{ option.label }}
+          </mat-checkbox>
+        }
+      </div>
+    </mat-card>
+
+    @if (diagnosticResults().length) {
+      <mat-card class="diagnostic-card">
+        <mat-card-title>Diagnostic cible</mat-card-title>
+
+        @for (result of diagnosticResults(); track result.symptom) {
+          <div class="diagnostic-section">
+            <h3>{{ result.label }}</h3>
+            @for (rec of result.recommendations; track rec) {
+              <p>• {{ rec }}</p>
+            }
+          </div>
+        }
+      </mat-card>
+    }
+
     @if (analysis(); as tuning) {
       <mat-card class="analysis-card">
         <mat-card-title>Analyse tuning</mat-card-title>

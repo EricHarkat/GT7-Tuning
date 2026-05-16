@@ -254,3 +254,49 @@
   display: flex;
   justify-content: space-between;
 }
+
+.feedback-card {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+
+  .feedback-hint {
+    margin: 8px 0 0;
+    font-size: 13px;
+    opacity: 0.6;
+  }
+}
+
+.symptoms-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px 24px;
+}
+
+.diagnostic-card {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+  border-left: 4px solid #f57c00;
+}
+
+.diagnostic-section {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(245, 124, 0, 0.06);
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #e65100;
+  }
+
+  p {
+    margin: 6px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
