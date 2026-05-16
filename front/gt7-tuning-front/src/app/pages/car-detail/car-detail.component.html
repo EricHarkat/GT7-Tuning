@@ -250,8 +250,13 @@
         @for (result of diagnosticResults(); track result.symptom) {
           <div class="diagnostic-section">
             <h3>{{ result.label }}</h3>
-            @for (rec of result.recommendations; track rec) {
-              <p>• {{ rec }}</p>
+            @for (rec of result.recommendations; track rec.text) {
+              <div class="rec-item">
+                <p>• {{ rec.text }}</p>
+                @if (rec.menuPath) {
+                  <span class="menu-path">📍 {{ rec.menuPath }}</span>
+                }
+              </div>
             }
           </div>
         }
@@ -477,6 +482,8 @@
         Voir la source Fandom
       </a>
     }
+
+    <app-glossary />
   </div>
 } @else {
   <p>Chargement...</p>

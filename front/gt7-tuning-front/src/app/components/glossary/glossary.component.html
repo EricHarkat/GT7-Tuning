@@ -1,0 +1,29 @@
+<mat-card class="glossary-card">
+  <div class="glossary-header" (click)="toggle()">
+    <div class="glossary-title">
+      <mat-icon>menu_book</mat-icon>
+      <span>Lexique des termes de reglage</span>
+    </div>
+    <mat-icon>{{ open() ? 'expand_less' : 'expand_more' }}</mat-icon>
+  </div>
+
+  @if (open()) {
+    <div class="glossary-grid">
+      @for (term of terms; track term.key) {
+        <div class="term-item" [class.expanded]="expandedKey() === term.key" (click)="toggleTerm(term.key)">
+          <div class="term-header">
+            <strong>{{ term.label }}</strong>
+            @if (term.menuPath) {
+              <span class="menu-chip">📍 {{ term.menuPath }}</span>
+            }
+            <mat-icon class="expand-icon">{{ expandedKey() === term.key ? 'remove' : 'add' }}</mat-icon>
+          </div>
+
+          @if (expandedKey() === term.key) {
+            <p class="term-definition">{{ term.definition }}</p>
+          }
+        </div>
+      }
+    </div>
+  }
+</mat-card>

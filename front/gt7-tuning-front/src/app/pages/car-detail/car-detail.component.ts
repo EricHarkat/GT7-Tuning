@@ -26,6 +26,7 @@ import { Track } from '../../models/track';
 import { GuidedTuning, TuningStep } from '../../services/guided-tuning';
 import { Symptom, SymptomSeverity, SYMPTOM_OPTIONS, SymptomOption } from '../../models/behavior-feedback';
 import { SavedSetup } from '../../models/saved-setup';
+import { GlossaryComponent } from '../../components/glossary/glossary.component';
 
 @Component({
   selector: 'app-car-detail',
@@ -42,7 +43,8 @@ import { SavedSetup } from '../../models/saved-setup';
     MatInputModule,
     MatIconModule,
     MatButtonToggleModule,
-    DatePipe
+    DatePipe,
+    GlossaryComponent
   ]
 })
 export class CarDetailComponent implements OnInit {

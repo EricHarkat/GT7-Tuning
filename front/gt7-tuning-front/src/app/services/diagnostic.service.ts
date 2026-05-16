@@ -4,6 +4,7 @@ import { Track } from '../models/track';
 import {
   DiagnosticOutput,
   DiagnosticResult,
+  TuningRecommendation,
   Symptom,
   SymptomSeverity,
   CONFLICT_PAIRS
@@ -48,6 +49,63 @@ export class DiagnosticService {
     return { results, conflicts: this.detectConflicts(symptoms) };
   }
 
+  private rec(text: string): TuningRecommendation {
+    return { text, menuPath: this.menuPathFor(text) };
+  }
+
+  private menuPathFor(text: string): string | undefined {
+    const t = text.toLowerCase();
+    if (t.includes('arb avant') || (t.includes('anti-roulis') && t.includes('avant') && !t.includes('arriere')))
+      return 'Suspension → Barre anti-roulis → Avant';
+    if (t.includes('arb arriere') || (t.includes('anti-roulis') && t.includes('arriere') && !t.includes('avant')))
+      return 'Suspension → Barre anti-roulis → Arriere';
+    if (t.includes('arb avant') && t.includes('arriere'))
+      return 'Suspension → Barre anti-roulis → Avant + Arriere';
+    if (t.includes('frequence naturelle avant') || (t.includes('frequence') && t.includes('avant') && !t.includes('arriere')))
+      return 'Suspension → Frequence naturelle → Avant';
+    if (t.includes('frequence naturelle arriere') || (t.includes('frequence') && t.includes('arriere') && !t.includes('avant')))
+      return 'Suspension → Frequence naturelle → Arriere';
+    if (t.includes('frequence naturelle') && !t.includes('avant') && !t.includes('arriere'))
+      return 'Suspension → Frequence naturelle';
+    if (t.includes('compression avant') && !t.includes('arriere'))
+      return 'Suspension → Amortisseurs compression → Avant';
+    if (t.includes('compression arriere') && !t.includes('avant'))
+      return 'Suspension → Amortisseurs compression → Arriere';
+    if (t.includes('expansion avant') && !t.includes('arriere'))
+      return 'Suspension → Amortisseurs detente → Avant';
+    if (t.includes('expansion arriere') && !t.includes('avant'))
+      return 'Suspension → Amortisseurs detente → Arriere';
+    if ((t.includes('expansion') || t.includes('detente')) && t.includes('avant') && t.includes('arriere'))
+      return 'Suspension → Amortisseurs detente → Avant + Arriere';
+    if (t.includes('lsd acceleration avant') || (t.includes('lsd') && t.includes('acceleration') && t.includes('avant')))
+      return 'Drivetrain → Sensibilite acceleration (avant)';
+    if (t.includes('lsd acceleration arriere') || (t.includes('lsd') && t.includes('acceleration') && t.includes('arriere')))
+      return 'Drivetrain → Sensibilite acceleration (arriere)';
+    if (t.includes('lsd acceleration') || (t.includes('lsd') && t.includes('acceleration')))
+      return 'Drivetrain → Sensibilite acceleration';
+    if (t.includes('lsd freinage') || t.includes('lsd deceleration') || (t.includes('lsd') && t.includes('freinage')))
+      return 'Drivetrain → Sensibilite deceleration';
+    if (t.includes('lsd initial') || (t.includes('lsd') && t.includes('initial')))
+      return 'Drivetrain → Couple initial';
+    if (t.includes('repartition centrale') || t.includes('differentiel central'))
+      return 'Drivetrain → Repartition av/ar';
+    if (t.includes('balance de freinage') || t.includes('balance') && t.includes('freinage'))
+      return 'Freins → Balance av/ar';
+    if ((t.includes('appui') || t.includes('appui avant')) && t.includes('avant') && !t.includes('arriere'))
+      return 'Aerodynamique → Appui avant';
+    if ((t.includes('appui') || t.includes('appui arriere')) && t.includes('arriere') && !t.includes('avant'))
+      return 'Aerodynamique → Appui arriere';
+    if (t.includes('carrossage'))
+      return 'Suspension → Angle de carrossage';
+    if (t.includes('toe') || t.includes('convergence') || t.includes('toe-in') || t.includes('toe-out'))
+      return 'Suspension → Angle de convergence → Arriere';
+    if (t.includes('rake') || (t.includes('hauteur de caisse') && !t.includes('haut')))
+      return 'Suspension → Hauteur de caisse';
+    if (t.includes('boite') || t.includes('rapport final') || t.includes('rapport de pont'))
+      return 'Transmission → Rapport de pont';
+    return undefined;
+  }
+
   private step(severity: SymptomSeverity): string {
     if (severity === 1) return '1 cran';
     if (severity === 3) return '2-3 crans';
@@ -78,43 +136,43 @@ export class DiagnosticService {
     isRearHeavy: boolean,
     isFrontHeavy: boolean
   ): DiagnosticResult {
-    const recs: string[] = [];
+    const recs: TuningRecommendation[] = [];
     const s = severity;
 
     switch (symptom) {
 
       case 'understeer_entry': {
-        recs.push(`Augmenter le rake de ${s === 1 ? 'quelques mm' : s === 3 ? '5-10 mm' : '2-5 mm'} pour forcer la rotation en entree`);
-        recs.push(`Reduire l'ARB avant de ${this.step(s)}`);
+        recs.push(this.rec(`Augmenter le rake de ${s === 1 ? 'quelques mm' : s === 3 ? '5-10 mm' : '2-5 mm'} pour forcer la rotation en entree`));
+        recs.push(this.rec(`Reduire l'ARB avant de ${this.step(s)}`));
         if (hasFullSuspension) {
-          recs.push(`Reduire la frequence naturelle avant de ${this.freqStep(s)}`);
+          recs.push(this.rec(`Reduire la frequence naturelle avant de ${this.freqStep(s)}`));
         }
         if (hasFullDiff && drivetrain === 'FWD') {
-          recs.push('Reduire le LSD initial : un diff trop ferme bloque la rotation du train avant');
+          recs.push(this.rec('Reduire le LSD initial : un diff trop ferme bloque la rotation du train avant'));
         }
         if (isFrontHeavy && balance) {
-          recs.push(`Voiture a dominante avant (${balance.frontPct}/${balance.rearPct}) : le sous-virage est structurel — le rake et l'ARB sont les leviers principaux`);
+          recs.push(this.rec(`Voiture a dominante avant (${balance.frontPct}/${balance.rearPct}) : le sous-virage est structurel — le rake et l'ARB sont les leviers principaux`));
         }
         if (hasAero) {
-          recs.push('Augmenter legerement l\'appui avant pour ameliorer la mise en virage');
+          recs.push(this.rec('Augmenter legerement l\'appui avant pour ameliorer la mise en virage'));
         }
         if (trackCategory === 'technical') {
-          recs.push('Circuit technique : priorite au rake et a l\'ARB avant plutot qu\'a l\'aerodynamique');
+          recs.push(this.rec('Circuit technique : priorite au rake et a l\'ARB avant plutot qu\'a l\'aerodynamique'));
         }
         break;
       }
 
       case 'understeer_mid': {
-        recs.push(`Reduire l'ARB avant de ${this.step(s)}`);
-        recs.push(`Augmenter le carrossage avant de ${s === 1 ? '0.1 degre' : s === 3 ? '0.3-0.5 degres' : '0.2 degres'} (plus negatif)`);
+        recs.push(this.rec(`Reduire l'ARB avant de ${this.step(s)}`));
+        recs.push(this.rec(`Augmenter le carrossage avant de ${s === 1 ? '0.1 degre' : s === 3 ? '0.3-0.5 degres' : '0.2 degres'} (plus negatif)`));
         if (hasFullSuspension) {
-          recs.push(`Reduire la compression avant de ${this.step(s)} pour laisser plus de charge sur l'exterieur`);
+          recs.push(this.rec(`Reduire la compression avant de ${this.step(s)} pour laisser plus de charge sur l'exterieur`));
         }
         if (isFrontHeavy && balance) {
-          recs.push(`Repartition avant chargee (${balance.frontPct}/${balance.rearPct}) : le transfert lateral est eleve — l'ARB et le carrossage sont critiques`);
+          recs.push(this.rec(`Repartition avant chargee (${balance.frontPct}/${balance.rearPct}) : le transfert lateral est eleve — l'ARB et le carrossage sont critiques`));
         }
         if (isComfortTire) {
-          recs.push('Pneus confort : la limite de grip lateral est basse — monter en Sports si le reglement le permet');
+          recs.push(this.rec('Pneus confort : la limite de grip lateral est basse — monter en Sports si le reglement le permet'));
         }
         break;
       }
@@ -122,46 +180,46 @@ export class DiagnosticService {
       case 'understeer_exit': {
         if (hasFullDiff) {
           if (drivetrain === 'FWD' || drivetrain === 'AWD') {
-            recs.push(`Reduire le LSD acceleration avant de ${this.step(s)} : un diff ferme pousse tout droit`);
+            recs.push(this.rec(`Reduire le LSD acceleration avant de ${this.step(s)} : un diff ferme pousse tout droit`));
           }
           if (drivetrain === 'AWD') {
-            recs.push('Deplacer la repartition centrale vers l\'arriere (ex. 40/60 -> 30/70)');
+            recs.push(this.rec('Deplacer la repartition centrale vers l\'arriere (ex. 40/60 -> 30/70)'));
           }
           if (drivetrain === 'RWD') {
-            recs.push('Sur RWD : l\'arriere peut saturer et pousser l\'avant — reduire l\'ARB arriere d\'1 cran');
-            recs.push('Verifier que le LSD acceleration n\'est pas trop faible (diff trop ouvert = desequilibre lateral)');
+            recs.push(this.rec('Sur RWD : l\'arriere peut saturer et pousser l\'avant — reduire l\'ARB arriere d\'1 cran'));
+            recs.push(this.rec('Verifier que le LSD acceleration n\'est pas trop faible (diff trop ouvert = desequilibre lateral)'));
           }
         }
-        recs.push(`Augmenter l'ARB arriere de ${this.step(s)} pour rigidifier l'arriere et liberer l'avant`);
+        recs.push(this.rec(`Augmenter l'ARB arriere de ${this.step(s)} pour rigidifier l'arriere et liberer l'avant`));
         if (trackCategory === 'technical') {
-          recs.push('Circuit technique : attendre plus longtemps avant d\'accelerer, laisser la voiture se redresser completement');
+          recs.push(this.rec('Circuit technique : attendre plus longtemps avant d\'accelerer, laisser la voiture se redresser completement'));
         }
         break;
       }
 
       case 'oversteer_entry': {
-        recs.push(`Augmenter l'ARB arriere de ${this.step(s)}`);
-        recs.push(`Reduire le rake de ${s === 1 ? '2-3 mm' : s === 3 ? '8-12 mm' : '4-6 mm'} pour stabiliser l'entree`);
+        recs.push(this.rec(`Augmenter l'ARB arriere de ${this.step(s)}`));
+        recs.push(this.rec(`Reduire le rake de ${s === 1 ? '2-3 mm' : s === 3 ? '8-12 mm' : '4-6 mm'} pour stabiliser l'entree`));
         if (hasFullSuspension) {
-          recs.push(`Augmenter la frequence naturelle arriere de ${this.freqStep(s)}`);
+          recs.push(this.rec(`Augmenter la frequence naturelle arriere de ${this.freqStep(s)}`));
         }
         if (hasFullDiff && (drivetrain === 'RWD' || drivetrain === 'AWD')) {
-          recs.push(`Reduire le LSD freinage de ${this.step(s)} : un diff ouvert en deceleration laisse l'arriere se derober`);
+          recs.push(this.rec(`Reduire le LSD freinage de ${this.step(s)} : un diff ouvert en deceleration laisse l'arriere se derober`));
         }
         if (enginePosition === 'mid') {
-          recs.push('Moteur central : l\'effet pendule amplifie le survirage en entree — corrections tres progressives, par pas de 1 cran');
+          recs.push(this.rec('Moteur central : l\'effet pendule amplifie le survirage en entree — corrections tres progressives, par pas de 1 cran'));
         }
         if (enginePosition === 'rear') {
-          recs.push('Moteur arriere (style 911) : le poids arriere rend le survirage en entree impredictible — l\'ARB et la compression arriere sont les leviers cles');
+          recs.push(this.rec('Moteur arriere (style 911) : le poids arriere rend le survirage en entree impredictible — l\'ARB et la compression arriere sont les leviers cles'));
         }
         if (isRearHeavy && balance) {
-          recs.push(`Repartition arriere chargee (${balance.frontPct}/${balance.rearPct}) : l'arriere est naturellement instable — eviter les corrections trop agressives`);
+          recs.push(this.rec(`Repartition arriere chargee (${balance.frontPct}/${balance.rearPct}) : l'arriere est naturellement instable — eviter les corrections trop agressives`));
         }
         if (hasAero) {
-          recs.push('Augmenter l\'appui arriere');
+          recs.push(this.rec('Augmenter l\'appui arriere'));
         }
         if (trackCategory === 'high_speed') {
-          recs.push('A haute vitesse : l\'aerodynamique est le levier le plus efficace avant la suspension');
+          recs.push(this.rec('A haute vitesse : l\'aerodynamique est le levier le plus efficace avant la suspension'));
         }
         break;
       }
@@ -169,102 +227,102 @@ export class DiagnosticService {
       case 'oversteer_exit': {
         if (hasFullDiff) {
           if (drivetrain === 'RWD') {
-            recs.push(`Reduire le LSD acceleration de ${s === 1 ? '3 crans' : s === 3 ? '8-10 crans' : '5 crans'} et re-evaluer`);
+            recs.push(this.rec(`Reduire le LSD acceleration de ${s === 1 ? '3 crans' : s === 3 ? '8-10 crans' : '5 crans'} et re-evaluer`));
           }
           if (drivetrain === 'AWD') {
-            recs.push(`Reduire le LSD acceleration arriere de ${this.step(s)}`);
-            recs.push('Augmenter legerement la repartition vers l\'avant pour lisser la motricite');
+            recs.push(this.rec(`Reduire le LSD acceleration arriere de ${this.step(s)}`));
+            recs.push(this.rec('Augmenter legerement la repartition vers l\'avant pour lisser la motricite'));
           }
           if (drivetrain === 'FWD') {
-            recs.push('Survirage en sortie sur FWD : verifier si c\'est un rebond arriere ou une surface glissante');
+            recs.push(this.rec('Survirage en sortie sur FWD : verifier si c\'est un rebond arriere ou une surface glissante'));
           }
         }
-        recs.push(`Augmenter l'ARB avant de ${this.step(s)} pour stabiliser la transition a l'acceleration`);
+        recs.push(this.rec(`Augmenter l'ARB avant de ${this.step(s)} pour stabiliser la transition a l'acceleration`));
         if (hasFullSuspension) {
-          recs.push(`Augmenter la compression arriere de ${this.step(s)} pour freiner le transfert de masse`);
+          recs.push(this.rec(`Augmenter la compression arriere de ${this.step(s)} pour freiner le transfert de masse`));
         }
         if (enginePosition === 'mid' && drivetrain === 'RWD') {
-          recs.push('Moteur central RWD : tres sensible au LSD — descendre par pas de 3 crans maximum a la fois');
+          recs.push(this.rec('Moteur central RWD : tres sensible au LSD — descendre par pas de 3 crans maximum a la fois'));
         }
         if (isRearHeavy && balance) {
-          recs.push(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : le poids arriere amplifie le survirage — corrections plus conservatrices`);
+          recs.push(this.rec(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : le poids arriere amplifie le survirage — corrections plus conservatrices`));
         }
         break;
       }
 
       case 'oversteer_braking': {
-        recs.push(`Deplacer la balance de freinage vers l'avant de ${s === 1 ? '1 cran' : s === 3 ? '3-4 crans' : '2 crans'}`);
+        recs.push(this.rec(`Deplacer la balance de freinage vers l'avant de ${s === 1 ? '1 cran' : s === 3 ? '3-4 crans' : '2 crans'}`));
         if (hasFullDiff) {
-          recs.push(`Reduire le LSD freinage de ${this.step(s)} : un diff bloque en deceleration cree un couple de lacet`);
+          recs.push(this.rec(`Reduire le LSD freinage de ${this.step(s)} : un diff bloque en deceleration cree un couple de lacet`));
         }
         if (hasFullSuspension) {
-          recs.push(`Augmenter la compression arriere de ${this.step(s)}`);
-          recs.push('Reduire l\'expansion arriere pour eviter un retour de suspension trop rapide apres le frein');
+          recs.push(this.rec(`Augmenter la compression arriere de ${this.step(s)}`));
+          recs.push(this.rec('Reduire l\'expansion arriere pour eviter un retour de suspension trop rapide apres le frein'));
         } else {
-          recs.push('Sans suspension reglable : agir sur la balance de freinage et le LSD uniquement');
+          recs.push(this.rec('Sans suspension reglable : agir sur la balance de freinage et le LSD uniquement'));
         }
-        recs.push('Verifier le toe arriere : un toe-in (+0.05 a +0.10) stabilise l\'arriere sous freinage');
+        recs.push(this.rec('Verifier le toe arriere : un toe-in (+0.05 a +0.10) stabilise l\'arriere sous freinage'));
         if (enginePosition === 'rear') {
-          recs.push('Moteur arriere : le survirage au freinage est tres caracteristique — priorite absolue au LSD freinage et a la balance');
+          recs.push(this.rec('Moteur arriere : le survirage au freinage est tres caracteristique — priorite absolue au LSD freinage et a la balance'));
         }
         break;
       }
 
       case 'lift_off_oversteer': {
-        recs.push(`Augmenter le LSD freinage de ${this.step(s)} pour maintenir la connexion arriere au lever de pied`);
+        recs.push(this.rec(`Augmenter le LSD freinage de ${this.step(s)} pour maintenir la connexion arriere au lever de pied`));
         if (hasFullSuspension) {
-          recs.push(`Reduire l'expansion arriere de ${this.step(s)} : empeche la suspension de se detendre trop vite`);
-          recs.push(`Reduire l'ARB arriere de ${s === 1 ? '1 cran' : '1-2 crans'} pour laisser l'arriere absorber le changement de charge`);
+          recs.push(this.rec(`Reduire l'expansion arriere de ${this.step(s)} : empeche la suspension de se detendre trop vite`));
+          recs.push(this.rec(`Reduire l'ARB arriere de ${s === 1 ? '1 cran' : '1-2 crans'} pour laisser l'arriere absorber le changement de charge`));
         }
-        recs.push('Reduire le rake de 2-3 mm : moins de rotation naturelle au lever de pied');
-        recs.push('Augmenter le toe-in arriere (+0.05 a +0.10) pour stabiliser l\'arriere en deceleration');
+        recs.push(this.rec('Reduire le rake de 2-3 mm : moins de rotation naturelle au lever de pied'));
+        recs.push(this.rec('Augmenter le toe-in arriere (+0.05 a +0.10) pour stabiliser l\'arriere en deceleration'));
         if (enginePosition === 'rear') {
-          recs.push('Moteur arriere (style 911) : c\'est le comportement typique de ce type de voiture — l\'expansion arriere et le LSD freinage sont les deux leviers prioritaires');
+          recs.push(this.rec('Moteur arriere (style 911) : c\'est le comportement typique de ce type de voiture — l\'expansion arriere et le LSD freinage sont les deux leviers prioritaires'));
         }
         if (enginePosition === 'mid') {
-          recs.push('Moteur central : l\'effet pendule rend ce symptome difficile a corriger — travailler l\'expansion avant de toucher l\'ARB');
+          recs.push(this.rec('Moteur central : l\'effet pendule rend ce symptome difficile a corriger — travailler l\'expansion avant de toucher l\'ARB'));
         }
         if (isRearHeavy && balance) {
-          recs.push(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : aggrave naturellement ce symptome — corrections conservatrices`);
+          recs.push(this.rec(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : aggrave naturellement ce symptome — corrections conservatrices`));
         }
         if (trackCategory === 'technical') {
-          recs.push('Circuit technique : ce symptome est penalisant dans les chicanes — priorite a l\'expansion arriere');
+          recs.push(this.rec('Circuit technique : ce symptome est penalisant dans les chicanes — priorite a l\'expansion arriere'));
         }
         break;
       }
 
       case 'bouncing': {
         if (hasFullSuspension) {
-          recs.push(`Reduire l'expansion avant et arriere de ${this.step(s)}`);
-          if (s >= 2) recs.push('Reduire aussi la compression si ca rebondit sur les bosses (choc initial trop brusque)');
-          recs.push(`Reduire la frequence naturelle de ${this.freqStep(s)}`);
+          recs.push(this.rec(`Reduire l'expansion avant et arriere de ${this.step(s)}`));
+          if (s >= 2) recs.push(this.rec('Reduire aussi la compression si ca rebondit sur les bosses (choc initial trop brusque)'));
+          recs.push(this.rec(`Reduire la frequence naturelle de ${this.freqStep(s)}`));
         } else {
-          recs.push('Installer une suspension entierement personnalisable pour acceder aux amortisseurs');
+          recs.push(this.rec('Installer une suspension entierement personnalisable pour acceder aux amortisseurs'));
         }
-        recs.push('Verifier la hauteur de caisse : trop basse sur circuit bossu = risque de toucher le sol');
+        recs.push(this.rec('Verifier la hauteur de caisse : trop basse sur circuit bossu = risque de toucher le sol'));
         if (trackCategory === 'rally') {
-          recs.push('Surface rally : maximiser la garde au sol et assouplir au maximum — la suspension doit absorber avant tout');
+          recs.push(this.rec('Surface rally : maximiser la garde au sol et assouplir au maximum — la suspension doit absorber avant tout'));
         }
         if (isRacingTire && s >= 2) {
-          recs.push('Pneus racing : paradoxalement, ils transmettent mieux les imperfections — ne pas surcompenser avec trop de souplesse');
+          recs.push(this.rec('Pneus racing : paradoxalement, ils transmettent mieux les imperfections — ne pas surcompenser avec trop de souplesse'));
         }
         break;
       }
 
       case 'high_speed_instability': {
         if (hasAero) {
-          recs.push(`Augmenter l'appui arriere de ${s === 1 ? '5-10%' : s === 3 ? '20-30%' : '10-15%'} de la plage`);
-          recs.push('Augmenter aussi l\'appui avant proportionnellement pour garder l\'equilibre');
+          recs.push(this.rec(`Augmenter l'appui arriere de ${s === 1 ? '5-10%' : s === 3 ? '20-30%' : '10-15%'} de la plage`));
+          recs.push(this.rec('Augmenter aussi l\'appui avant proportionnellement pour garder l\'equilibre'));
         } else {
-          recs.push('Installer des pieces aerodynamiques reglables — indispensable a haute vitesse');
+          recs.push(this.rec('Installer des pieces aerodynamiques reglables — indispensable a haute vitesse'));
         }
-        recs.push(`Augmenter l'ARB avant et arriere de ${this.step(s)}`);
+        recs.push(this.rec(`Augmenter l'ARB avant et arriere de ${this.step(s)}`));
         if (hasFullSuspension) {
-          recs.push(`Augmenter la frequence naturelle de ${this.freqStep(s)}`);
+          recs.push(this.rec(`Augmenter la frequence naturelle de ${this.freqStep(s)}`));
         }
-        recs.push('Verifier le toe arriere : toe-in de +0.05 a +0.10 ameliore la stabilite en ligne droite');
+        recs.push(this.rec('Verifier le toe arriere : toe-in de +0.05 a +0.10 ameliore la stabilite en ligne droite'));
         if (isRearHeavy && balance) {
-          recs.push(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : aggrave l'instabilite — l'aero arriere est encore plus critique`);
+          recs.push(this.rec(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : aggrave l'instabilite — l'aero arriere est encore plus critique`));
         }
         break;
       }
@@ -272,44 +330,44 @@ export class DiagnosticService {
       case 'wheelspin_launch': {
         if (hasFullDiff) {
           if (drivetrain === 'RWD') {
-            recs.push(`Reduire le LSD acceleration de ${s === 1 ? '3-5 crans' : s === 3 ? '10-15 crans' : '5-8 crans'}`);
+            recs.push(this.rec(`Reduire le LSD acceleration de ${s === 1 ? '3-5 crans' : s === 3 ? '10-15 crans' : '5-8 crans'}`));
           }
           if (drivetrain === 'AWD') {
-            recs.push(`Reduire le LSD acceleration arriere de ${this.step(s)}`);
-            recs.push('Deplacer la repartition centrale vers l\'avant (ex. 30/70 -> 40/60) pour le depart');
+            recs.push(this.rec(`Reduire le LSD acceleration arriere de ${this.step(s)}`));
+            recs.push(this.rec('Deplacer la repartition centrale vers l\'avant (ex. 30/70 -> 40/60) pour le depart'));
           }
           if (drivetrain === 'FWD') {
-            recs.push(`Augmenter le LSD initial de ${this.step(s)} pour mieux repartir la traction entre les deux roues avant`);
+            recs.push(this.rec(`Augmenter le LSD initial de ${this.step(s)} pour mieux repartir la traction entre les deux roues avant`));
           }
         }
-        if (s >= 2) recs.push('Monter en categorie de pneus si le reglement le permet');
+        if (s >= 2) recs.push(this.rec('Monter en categorie de pneus si le reglement le permet'));
         if (!parts.powerRestrictor && s === 3) {
-          recs.push('Symptome severe : envisager un limiteur de puissance');
+          recs.push(this.rec('Symptome severe : envisager un limiteur de puissance'));
         }
         if (hasFullSuspension) {
-          recs.push(`Assouplir la compression arriere de ${s === 1 ? '1 cran' : '1-2 crans'} pour plaquer l'arriere au sol`);
+          recs.push(this.rec(`Assouplir la compression arriere de ${s === 1 ? '1 cran' : '1-2 crans'} pour plaquer l'arriere au sol`));
         }
         if (isRearHeavy && balance) {
-          recs.push(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : le poids aide la traction — le LSD reste le levier principal`);
+          recs.push(this.rec(`Repartition arriere (${balance.frontPct}/${balance.rearPct}) : le poids aide la traction — le LSD reste le levier principal`));
         }
         break;
       }
 
       case 'unstable_braking': {
-        recs.push(`Ajuster la balance de freinage de ${s === 1 ? '1 cran' : s === 3 ? '3-4 crans' : '2 crans'} vers l'avant`);
+        recs.push(this.rec(`Ajuster la balance de freinage de ${s === 1 ? '1 cran' : s === 3 ? '3-4 crans' : '2 crans'} vers l'avant`));
         if (hasFullSuspension) {
-          recs.push(`Augmenter la compression avant de ${this.step(s)}`);
-          if (s >= 2) recs.push('Verifier que la compression arriere n\'est pas trop faible');
+          recs.push(this.rec(`Augmenter la compression avant de ${this.step(s)}`));
+          if (s >= 2) recs.push(this.rec('Verifier que la compression arriere n\'est pas trop faible'));
         }
         if (hasFullDiff) {
-          recs.push(`Reduire le LSD freinage de ${this.step(s)} si l'arriere se decroche`);
+          recs.push(this.rec(`Reduire le LSD freinage de ${this.step(s)} si l'arriere se decroche`));
         }
-        recs.push('Verifier le carrossage et le toe : une asymetrie tire la voiture a la corde');
+        recs.push(this.rec('Verifier le carrossage et le toe : une asymetrie tire la voiture a la corde'));
         if (drivetrain === 'RWD') {
-          recs.push('RWD : commencer avec la balance 1-2 crans vers l\'avant comme base');
+          recs.push(this.rec('RWD : commencer avec la balance 1-2 crans vers l\'avant comme base'));
         }
         if (isFrontHeavy && balance) {
-          recs.push(`Voiture a dominante avant (${balance.frontPct}/${balance.rearPct}) : le pique-nez est amplifie — compression avant plus importante`);
+          recs.push(this.rec(`Voiture a dominante avant (${balance.frontPct}/${balance.rearPct}) : le pique-nez est amplifie — compression avant plus importante`));
         }
         break;
       }

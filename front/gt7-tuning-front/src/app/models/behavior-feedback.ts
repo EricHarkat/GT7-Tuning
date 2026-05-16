@@ -17,10 +17,15 @@ export interface SymptomOption {
   category: 'understeer' | 'oversteer' | 'stability' | 'traction';
 }
 
+export interface TuningRecommendation {
+  text: string;
+  menuPath?: string;
+}
+
 export interface DiagnosticResult {
   symptom: Symptom;
   label: string;
-  recommendations: string[];
+  recommendations: TuningRecommendation[];
 }
 
 export type SymptomSeverity = 1 | 2 | 3;

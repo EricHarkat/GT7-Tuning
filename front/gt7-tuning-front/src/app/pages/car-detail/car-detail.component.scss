@@ -443,3 +443,20 @@
     line-height: 1.5;
   }
 }
+
+.rec-item {
+  margin: 6px 0;
+
+  p { margin: 0; font-size: 14px; line-height: 1.5; }
+}
+
+.menu-path {
+  display: inline-block;
+  margin-top: 3px;
+  margin-left: 16px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(25, 118, 210, 0.1);
+  color: #1565c0;
+}
