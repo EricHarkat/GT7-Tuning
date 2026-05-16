@@ -169,13 +169,42 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Ballast</mat-label>
-              <mat-select [ngModel]="parts().ballast" (ngModelChange)="updatePart('ballast', $event)">
-                <mat-option [value]="false">Non installé</mat-option>
-                <mat-option [value]="true">Installé</mat-option>
-              </mat-select>
-            </mat-form-field>
+          </div>
+
+          <div class="ballast-section">
+            <div class="ballast-toggle-row">
+              <mat-checkbox [checked]="!!parts().ballast" (change)="toggleBallast($event.checked)">
+                Ballast installé
+              </mat-checkbox>
+            </div>
+
+            @if (parts().ballast; as ballast) {
+              <div class="ballast-controls">
+                <div class="ballast-field">
+                  <label>Poids</label>
+                  <input type="range" min="5" max="50" step="5"
+                    [value]="ballast.weight"
+                    (input)="updateBallast('weight', +$any($event.target).value)" />
+                  <span class="ballast-value">{{ ballast.weight }} kg</span>
+                </div>
+
+                <div class="ballast-field">
+                  <label>Position</label>
+                  <div class="ballast-pos-labels"><span>◀ Avant</span><span>Arrière ▶</span></div>
+                  <input type="range" min="-50" max="50" step="5"
+                    [value]="ballast.position"
+                    (input)="updateBallast('position', +$any($event.target).value)" />
+                  <span class="ballast-value">{{ ballast.position > 0 ? '+' : '' }}{{ ballast.position }}</span>
+                </div>
+
+                @if (effectiveBalance(); as bal) {
+                  <div class="ballast-balance">
+                    <span>Répartition résultante</span>
+                    <strong>{{ bal.frontPct }}% AV · {{ bal.rearPct }}% AR</strong>
+                  </div>
+                }
+              </div>
+            }
           </div>
         </details>
       </mat-card>
@@ -210,6 +239,24 @@
         }
       </mat-card>
     </section>
+
+    <!-- RAPPORTS DE BOÎTE -->
+    @if (gearRatioTips().length) {
+      <mat-card class="gear-card">
+        <div class="gear-header">
+          <mat-icon>settings</mat-icon>
+          <mat-card-title>Réglage de la boîte de vitesses</mat-card-title>
+        </div>
+        <div class="gear-tips">
+          @for (tip of gearRatioTips(); track tip) {
+            <div class="gear-tip">
+              <mat-icon class="tip-icon">arrow_right</mat-icon>
+              <p>{{ tip }}</p>
+            </div>
+          }
+        </div>
+      </mat-card>
+    }
 
     <!-- ÉTAPE 3 : SYMPTÔMES -->
     <div class="section-header">

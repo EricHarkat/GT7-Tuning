@@ -16,6 +16,7 @@ import { CarService } from '../../services/car.services';
 import { TrackService } from '../../services/track.services';
 import {
   InstalledParts,
+  BallastConfig,
   TuningAnalysisService
 } from '../../services/tuning-analysis.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
@@ -264,6 +265,74 @@ prevStep() {
     if (!current || !target) return null;
     return this.ppBudgetService.analyze(this.parts(), current, target);
   });
+
+  effectiveBalance = computed(() => {
+    const car = this.car();
+    const ballast = this.parts().ballast;
+    const base = car?.normalized?.balance;
+    if (!base) return null;
+    if (!ballast) return base;
+    const carWeight = car?.normalized?.weightKg ?? 1200;
+    const total = carWeight + ballast.weight;
+    const rearShift = (ballast.weight * (ballast.position / 100)) / total * 100;
+    return {
+      frontPct: Math.round((base.frontPct - rearShift) * 10) / 10,
+      rearPct:  Math.round((base.rearPct  + rearShift) * 10) / 10,
+    };
+  });
+
+  gearRatioTips = computed(() => {
+    if (this.parts().transmission !== 'fully_customizable') return [];
+    const car  = this.car();
+    const track = this.selectedTrack();
+    const tips: string[] = [];
+    const gears      = car?.normalized?.gearCount ?? null;
+    const drivetrain = car?.normalized?.drivetrain;
+    const engineType = car?.engineType ?? '';
+    const isTurbo    = engineType.toLowerCase().includes('turbo');
+    const isElectric = engineType.toLowerCase().includes('electr');
+
+    if (gears) tips.push(`Boîte ${gears} vitesses détectée.`);
+
+    if (track?.category === 'high_speed') {
+      tips.push('Circuit rapide : allonger le rapport final pour atteindre le rupteur en fin de ligne droite sans en manquer.');
+    } else if (track?.category === 'technical') {
+      tips.push('Circuit technique : raccourcir la boîte pour maximiser la relance en sortie de lents virages.');
+    } else if (track?.category === 'street') {
+      tips.push('Circuit urbain : boîte courte — les zones de freinage sont tardives et les reprises courtes comptent plus que la vitesse de pointe.');
+    } else {
+      tips.push('Sans circuit sélectionné : régler le rapport final pour atteindre le rupteur 50–100 m avant la fin de la plus longue ligne droite.');
+    }
+
+    if (isTurbo) {
+      tips.push('Moteur turbo : resserre l\'espacement des rapports pour rester dans la plage de puissance — éviter les trous de couple à la montée en régime.');
+    } else if (!isElectric) {
+      tips.push('Moteur atmosphérique : la plage de couple est plus large, l\'espacement des rapports peut être un peu plus ouvert.');
+    }
+
+    if (isElectric) {
+      tips.push('Moteur électrique : la boîte est moins critique — concentre-toi uniquement sur le rapport final pour la vitesse de pointe.');
+    }
+
+    if (drivetrain === 'RWD' && (car?.normalized?.powerHp ?? 0) > 450) {
+      tips.push('Voiture puissante RWD : évite un rapport final trop court qui amplifierait le wheelspin en sortie de virage.');
+    }
+
+    return tips;
+  });
+
+  toggleBallast(active: boolean): void {
+    this.parts.update(p => ({
+      ...p,
+      ballast: active ? { weight: 20, position: 0 } : false,
+    }));
+  }
+
+  updateBallast(field: keyof BallastConfig, value: number): void {
+    const b = this.parts().ballast;
+    if (!b) return;
+    this.parts.update(p => ({ ...p, ballast: { ...b, [field]: value } }));
+  }
 
   toggleSymptom(symptom: Symptom, checked: boolean): void {
     this.selectedSymptoms.update(current =>

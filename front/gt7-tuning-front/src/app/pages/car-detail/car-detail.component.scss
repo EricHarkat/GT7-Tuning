@@ -229,6 +229,105 @@
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
 }
 
+.ballast-section {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.ballast-toggle-row {
+  margin-bottom: 12px;
+}
+
+.ballast-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.ballast-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  label {
+    font-size: 13px;
+    min-width: 60px;
+    opacity: 0.7;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    min-width: 120px;
+    accent-color: #1976d2;
+  }
+}
+
+.ballast-pos-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 11px;
+  opacity: 0.45;
+  margin-bottom: -8px;
+  order: 3;
+}
+
+.ballast-value {
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
+.ballast-balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(25, 118, 210, 0.08);
+  border: 1px solid rgba(25, 118, 210, 0.2);
+
+  span { font-size: 12px; opacity: 0.65; }
+  strong { font-size: 15px; color: #1565c0; }
+}
+
+.gear-card {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  border-left: 4px solid #1976d2;
+}
+
+.gear-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  mat-icon { color: #1976d2; }
+}
+
+.gear-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gear-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+
+  .tip-icon { font-size: 18px; width: 18px; height: 18px; color: #1976d2; flex-shrink: 0; margin-top: 2px; }
+  p { margin: 0; font-size: 14px; line-height: 1.5; }
+}
+
 .section-header {
   display: flex;
   align-items: flex-start;

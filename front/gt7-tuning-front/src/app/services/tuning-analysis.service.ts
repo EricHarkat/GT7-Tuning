@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { Car } from '../models/car';
 import { Track } from '../models/track';
 
+export interface BallastConfig {
+  weight: number;   // kg, 5–50
+  position: number; // -50 (avant) à +50 (arrière)
+}
+
 export interface InstalledParts {
   suspension?: 'stock' | 'sport' | 'fully_customizable';
   differential?: 'stock' | 'lsd' | 'fully_customizable';
@@ -9,7 +14,7 @@ export interface InstalledParts {
   aero?: 'stock' | 'custom';
   brakes?: 'stock' | 'sport' | 'racing';
   tires?: string;
-  ballast?: boolean;
+  ballast?: false | BallastConfig;
   ecu?: 'stock' | 'sports' | 'fully_customizable';
   powerRestrictor?: boolean;
 }
