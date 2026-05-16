@@ -233,15 +233,19 @@ prevStep() {
   }
 }
 
-  diagnosticResults = computed(() => {
+  private diagnosticOutput = computed(() => {
     const car = this.car();
-    if (!car) return [];
+    if (!car) return null;
     return this.diagnosticService.diagnose(
       this.selectedSymptoms(),
       car,
-      this.parts()
+      this.parts(),
+      this.selectedTrack()
     );
   });
+
+  diagnosticResults = computed(() => this.diagnosticOutput()?.results ?? []);
+  diagnosticConflicts = computed(() => this.diagnosticOutput()?.conflicts ?? []);
 
   toggleSymptom(symptom: Symptom, checked: boolean): void {
     this.selectedSymptoms.update(current =>

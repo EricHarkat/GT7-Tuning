@@ -221,6 +221,18 @@
       <mat-card class="diagnostic-card">
         <mat-card-title>Diagnostic cible</mat-card-title>
 
+        @if (diagnosticConflicts().length) {
+          <div class="conflict-banner">
+            <mat-icon>warning</mat-icon>
+            <div>
+              <strong>Symptomes contradictoires detectes</strong>
+              @for (conflict of diagnosticConflicts(); track conflict) {
+                <p>• {{ conflict }}</p>
+              }
+            </div>
+          </div>
+        }
+
         @for (result of diagnosticResults(); track result.symptom) {
           <div class="diagnostic-section">
             <h3>{{ result.label }}</h3>

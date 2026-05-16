@@ -372,6 +372,24 @@
   font-size: 14px;
 }
 
+.conflict-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(211, 47, 47, 0.08);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  color: #b71c1c;
+
+  mat-icon { margin-top: 2px; flex-shrink: 0; }
+
+  strong { display: block; margin-bottom: 6px; font-size: 14px; }
+
+  p { margin: 4px 0; font-size: 13px; line-height: 1.5; }
+}
+
 .diagnostic-section {
   margin-top: 18px;
   padding: 16px;
