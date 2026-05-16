@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { CarService } from '../../services/car.services';
 import { TrackService } from '../../services/track.services';
@@ -23,7 +24,7 @@ import { SetupStorageService } from '../../services/setup-storage.service';
 import { Car } from '../../models/car';
 import { Track } from '../../models/track';
 import { GuidedTuning, TuningStep } from '../../services/guided-tuning';
-import { Symptom, SYMPTOM_OPTIONS, SymptomOption } from '../../models/behavior-feedback';
+import { Symptom, SymptomSeverity, SYMPTOM_OPTIONS, SymptomOption } from '../../models/behavior-feedback';
 import { SavedSetup } from '../../models/saved-setup';
 
 @Component({
@@ -40,6 +41,7 @@ import { SavedSetup } from '../../models/saved-setup';
     MatCheckboxModule,
     MatInputModule,
     MatIconModule,
+    MatButtonToggleModule,
     DatePipe
   ]
 })
@@ -50,6 +52,7 @@ export class CarDetailComponent implements OnInit {
   selectedTrackId = signal('');
   currentStepIndex = signal(0);
   selectedSymptoms = signal<Symptom[]>([]);
+  symptomSeverities = signal<Record<string, SymptomSeverity>>({});
   savedSetups = signal<SavedSetup[]>([]);
   setupName = signal('');
   setupNotes = signal('');
@@ -238,6 +241,7 @@ prevStep() {
     if (!car) return null;
     return this.diagnosticService.diagnose(
       this.selectedSymptoms(),
+      this.symptomSeverities(),
       car,
       this.parts(),
       this.selectedTrack()
@@ -251,6 +255,13 @@ prevStep() {
     this.selectedSymptoms.update(current =>
       checked ? [...current, symptom] : current.filter(s => s !== symptom)
     );
+    if (checked) {
+      this.symptomSeverities.update(s => ({ ...s, [symptom]: 2 as SymptomSeverity }));
+    }
+  }
+
+  setSeverity(symptom: Symptom, severity: SymptomSeverity): void {
+    this.symptomSeverities.update(s => ({ ...s, [symptom]: severity }));
   }
 
   updatePart<K extends keyof InstalledParts>(

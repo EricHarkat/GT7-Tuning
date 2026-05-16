@@ -269,9 +269,43 @@
 
 .symptoms-grid {
   margin-top: 18px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 10px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.symptom-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: background 0.15s;
+
+  &:has(mat-checkbox.mat-mdc-checkbox-checked) {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  mat-checkbox { min-width: 260px; }
+}
+
+.severity-toggle {
+  &.mat-button-toggle-group {
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .mat-button-toggle {
+    font-size: 12px;
+    height: 28px;
+    line-height: 28px;
+  }
+
+  .mat-button-toggle-checked {
+    background: #1976d2;
+    color: white;
+  }
 }
 
 .diagnostic-card {

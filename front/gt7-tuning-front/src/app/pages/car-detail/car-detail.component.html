@@ -207,12 +207,26 @@
 
       <div class="symptoms-grid">
         @for (option of symptomOptions; track option.key) {
-          <mat-checkbox
-            [checked]="selectedSymptoms().includes(option.key)"
-            (change)="toggleSymptom(option.key, $event.checked)"
-          >
-            {{ option.label }}
-          </mat-checkbox>
+          <div class="symptom-row">
+            <mat-checkbox
+              [checked]="selectedSymptoms().includes(option.key)"
+              (change)="toggleSymptom(option.key, $event.checked)"
+            >
+              {{ option.label }}
+            </mat-checkbox>
+
+            @if (selectedSymptoms().includes(option.key)) {
+              <mat-button-toggle-group
+                class="severity-toggle"
+                [value]="symptomSeverities()[option.key] ?? 2"
+                (change)="setSeverity(option.key, $event.value)"
+              >
+                <mat-button-toggle [value]="1">Leger</mat-button-toggle>
+                <mat-button-toggle [value]="2">Modere</mat-button-toggle>
+                <mat-button-toggle [value]="3">Severe</mat-button-toggle>
+              </mat-button-toggle-group>
+            }
+          </div>
         }
       </div>
     </mat-card>

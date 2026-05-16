@@ -107,6 +107,42 @@ def extract_number(value):
     return number
 
 
+def parse_balance_pct(value):
+    if not value:
+        return None
+    match = re.search(r'(\d+)\s*[:/]\s*(\d+)', str(value))
+    if not match:
+        return None
+    front = int(match.group(1))
+    rear = int(match.group(2))
+    if abs(front + rear - 100) > 2:
+        return None
+    return {'frontPct': front, 'rearPct': rear}
+
+
+def normalize_engine_position(value):
+    if not value:
+        return None
+    v = str(value).lower()
+    if 'front' in v:
+        return 'front'
+    if 'mid' in v:
+        return 'mid'
+    if 'rear' in v:
+        return 'rear'
+    return None
+
+
+def extract_gear_count(value):
+    if not value:
+        return None
+    v = str(value).lower()
+    if 'cvt' in v:
+        return None
+    match = re.search(r'(\d+)-speed', v)
+    return int(match.group(1)) if match else None
+
+
 def normalize_drivetrain(value):
     if not value:
         return None
@@ -180,11 +216,10 @@ def build_normalized(car):
         "PP in GT7"
     )
 
-    year_raw = pick_spec(
-        specs,
-        "year",
-        "Year"
-    )
+    year_raw = pick_spec(specs, "year", "Year")
+    balance_raw = pick_spec(specs, "balance", "Balance")
+    layout_raw = pick_spec(specs, "layout", "Layout")
+    gearbox_raw = pick_spec(specs, "gearbox", "Gearbox")
 
     power_hp = extract_number(power_raw)
     weight_kg = extract_number(weight_raw)
@@ -196,6 +231,9 @@ def build_normalized(car):
         or extract_year_from_car_name(car.get("pageTitle"))
     )
     drivetrain = normalize_drivetrain(drivetrain_raw)
+    balance = parse_balance_pct(balance_raw)
+    engine_position = normalize_engine_position(layout_raw)
+    gear_count = extract_gear_count(gearbox_raw)
 
     power_to_weight = None
     weight_to_power = None
@@ -211,6 +249,9 @@ def build_normalized(car):
         "pp": pp,
         "year": year,
         "drivetrain": drivetrain,
+        "balance": balance,
+        "enginePosition": engine_position,
+        "gearCount": gear_count,
         "raw": {
             "power": power_raw,
             "weight": weight_raw,

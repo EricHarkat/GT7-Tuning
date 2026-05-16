@@ -22,6 +22,9 @@ export interface Car {
     pp?: number | null;
     year?: number | null;
     drivetrain?: string | null;
+    balance?: { frontPct: number; rearPct: number } | null;
+    enginePosition?: 'front' | 'mid' | 'rear' | null;
+    gearCount?: number | null;
     metrics?: {
       powerToWeight?: number | null;
       weightToPower?: number | null;

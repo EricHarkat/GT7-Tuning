@@ -23,6 +23,8 @@ export interface DiagnosticResult {
   recommendations: string[];
 }
 
+export type SymptomSeverity = 1 | 2 | 3;
+
 export interface DiagnosticOutput {
   results: DiagnosticResult[];
   conflicts: string[];
