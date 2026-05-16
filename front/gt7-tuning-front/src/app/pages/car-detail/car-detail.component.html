@@ -21,7 +21,7 @@
 
     @if (guidedSteps().length) {
   <mat-card class="guided-card">
-    <mat-card-title>Guided Tuning</mat-card-title>
+    <mat-card-title>Guide de réglage</mat-card-title>
 
     @if (currentStep(); as step) {
   <div class="step">
@@ -288,11 +288,11 @@
               @if (tuning.setupValues.lsd.front && tuning.setupValues.lsd.rear) {
                 <p>• LSD avant : Init {{ tuning.setupValues.lsd.front.initial }},
                   Accel {{ tuning.setupValues.lsd.front.acceleration }},
-                  Braking {{ tuning.setupValues.lsd.front.braking }}
+                  Freinage {{ tuning.setupValues.lsd.front.braking }}
                 </p>
                 <p>• LSD arrière : Init {{ tuning.setupValues.lsd.rear.initial }},
                   Accel {{ tuning.setupValues.lsd.rear.acceleration }},
-                  Braking {{ tuning.setupValues.lsd.rear.braking }}
+                  Freinage {{ tuning.setupValues.lsd.rear.braking }}
                 </p>
                 <p>• Répartition centrale : {{ tuning.setupValues.lsd.centerSplit }}</p>
               } @else {

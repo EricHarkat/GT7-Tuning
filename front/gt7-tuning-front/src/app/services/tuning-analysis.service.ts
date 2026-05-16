@@ -105,12 +105,7 @@ export class TuningAnalysisService {
       tires: this.getTireLabel(parts.tires),
       naturalFrequency: this.getNaturalFrequencyBaseline(parts.tires),
       antiRollBars: this.getArbBaseline(drivetrain, parts.tires, car.normalized?.weightKg),
-      dampers: {
-        frontCompression: 30,
-        rearCompression: 30,
-        frontExpansion: 40,
-        rearExpansion: 40
-      },
+      dampers: this.getDampersBaseline(parts.tires, drivetrain, trackCategory),
       camber: this.getCamberBaseline(parts.tires),
       toe: {
         front: '0.00°',
@@ -400,6 +395,47 @@ export class TuningAnalysisService {
       initial: '5–10',
       acceleration: '20–35',
       braking: '5–15'
+    };
+  }
+
+  private getDampersBaseline(
+    tires?: string,
+    drivetrain?: string | null,
+    trackCategory?: string
+  ): SetupValues['dampers'] {
+    let compression = 30;
+    let expansion = 40;
+
+    if (tires?.startsWith('comfort')) {
+      compression = 20;
+      expansion = 28;
+    } else if (tires?.startsWith('sports')) {
+      compression = 28;
+      expansion = 38;
+    } else if (tires?.startsWith('racing')) {
+      compression = 38;
+      expansion = 50;
+    } else if (tires === 'intermediate' || tires === 'racing_wet') {
+      compression = 22;
+      expansion = 30;
+    }
+
+    if (trackCategory === 'rally') {
+      compression = Math.max(compression - 8, 10);
+      expansion = Math.max(expansion - 8, 15);
+    } else if (trackCategory === 'technical') {
+      compression += 3;
+      expansion += 3;
+    }
+
+    const frontComp = drivetrain === 'FWD' ? compression - 2 : compression;
+    const rearComp = drivetrain === 'RWD' ? compression - 2 : compression;
+
+    return {
+      frontCompression: Math.min(frontComp, 60),
+      rearCompression: Math.min(rearComp, 60),
+      frontExpansion: Math.min(expansion, 60),
+      rearExpansion: Math.min(expansion, 60)
     };
   }
 

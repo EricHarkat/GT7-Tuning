@@ -117,7 +117,7 @@ export class CarDetailComponent implements OnInit {
       });
     }
 
-    this.trackService.getTracks(1, 200).subscribe((res) => {
+    this.trackService.getAllTracks().subscribe((res) => {
       this.tracks.set(res.tracks);
     });
   }

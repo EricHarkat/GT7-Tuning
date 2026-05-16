@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Car } from '../models/car';
+import { environment } from '../../environments/environment';
 
 interface CarsResponse {
   page: number;
@@ -14,7 +15,7 @@ interface CarsResponse {
   providedIn: 'root'
 })
 export class CarService {
-  private apiUrl = 'http://localhost:3000/cars';
+  private apiUrl = `${environment.apiUrl}/cars`;
 
   constructor(private http: HttpClient) {}
 
