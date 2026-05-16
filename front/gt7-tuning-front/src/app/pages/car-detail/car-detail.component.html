@@ -342,6 +342,75 @@
       </mat-card>
     }
 
+    <mat-card class="save-card">
+      <div class="save-header">
+        <mat-card-title>Setups sauvegardés</mat-card-title>
+        <button mat-stroked-button (click)="showSaveForm.set(!showSaveForm())">
+          <mat-icon>{{ showSaveForm() ? 'close' : 'add' }}</mat-icon>
+          {{ showSaveForm() ? 'Annuler' : 'Sauvegarder le setup actuel' }}
+        </button>
+      </div>
+
+      @if (showSaveForm()) {
+        <div class="save-form">
+          <mat-form-field appearance="outline" class="save-name-field">
+            <mat-label>Nom du setup</mat-label>
+            <input matInput [ngModel]="setupName()" (ngModelChange)="setupName.set($event)" placeholder="ex. Nurburgring agressif" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="save-notes-field">
+            <mat-label>Notes (facultatif)</mat-label>
+            <textarea matInput [ngModel]="setupNotes()" (ngModelChange)="setupNotes.set($event)" rows="2" placeholder="ex. Sous-vire encore en S2, à revoir..."></textarea>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" [disabled]="!setupName().trim()" (click)="saveSetup()">
+            <mat-icon>save</mat-icon>
+            Sauvegarder
+          </button>
+        </div>
+      }
+
+      @if (savedSetups().length) {
+        <div class="setups-list">
+          @for (setup of savedSetups(); track setup.id) {
+            <div class="setup-item">
+              <div class="setup-meta">
+                <strong>{{ setup.name }}</strong>
+                <span class="setup-date">{{ setup.savedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+
+              <div class="setup-tags">
+                @if (setup.trackName) {
+                  <span class="tag tag-track">{{ setup.trackName }}</span>
+                }
+                <span class="tag tag-tires">{{ setup.parts.tires }}</span>
+                <span class="tag tag-drivetrain">{{ setup.parts.suspension }}</span>
+                @for (symptom of setup.symptoms; track symptom) {
+                  <span class="tag tag-symptom">{{ symptom }}</span>
+                }
+              </div>
+
+              @if (setup.notes) {
+                <p class="setup-notes">{{ setup.notes }}</p>
+              }
+
+              <div class="setup-actions">
+                <button mat-stroked-button color="primary" (click)="loadSetup(setup)">
+                  <mat-icon>upload</mat-icon>
+                  Charger
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteSetup(setup.id)" aria-label="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (!showSaveForm()) {
+        <p class="no-setups">Aucun setup sauvegardé pour cette voiture.</p>
+      }
+    </mat-card>
+
     <section class="stats-grid">
       <mat-card><span>PP</span><strong>{{ currentCar.normalized?.pp || '—' }}</strong></mat-card>
       <mat-card><span>Année</span><strong>{{ currentCar.normalized?.year || '—' }}</strong></mat-card>

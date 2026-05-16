@@ -281,6 +281,97 @@
   border-left: 4px solid #f57c00;
 }
 
+.save-card {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.save-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.save-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .save-name-field { width: 100%; }
+  .save-notes-field { width: 100%; }
+}
+
+.setups-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.setup-item {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.setup-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  strong { font-size: 16px; }
+}
+
+.setup-date {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.setup-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.tag-track    { background: rgba(25, 118, 210, 0.12); color: #1565c0; }
+  &.tag-tires    { background: rgba(56, 142, 60, 0.12);  color: #2e7d32; }
+  &.tag-drivetrain { background: rgba(0,0,0,0.07); }
+  &.tag-symptom  { background: rgba(245, 124, 0, 0.12);  color: #e65100; }
+}
+
+.setup-notes {
+  margin: 10px 0 0;
+  font-size: 13px;
+  opacity: 0.65;
+  font-style: italic;
+}
+
+.setup-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.no-setups {
+  margin-top: 16px;
+  opacity: 0.5;
+  font-size: 14px;
+}
+
 .diagnostic-section {
   margin-top: 18px;
   padding: 16px;

@@ -1,12 +1,15 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 import { CarService } from '../../services/car.services';
 import { TrackService } from '../../services/track.services';
@@ -15,11 +18,13 @@ import {
   TuningAnalysisService
 } from '../../services/tuning-analysis.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
+import { SetupStorageService } from '../../services/setup-storage.service';
 
 import { Car } from '../../models/car';
 import { Track } from '../../models/track';
 import { GuidedTuning, TuningStep } from '../../services/guided-tuning';
 import { Symptom, SYMPTOM_OPTIONS, SymptomOption } from '../../models/behavior-feedback';
+import { SavedSetup } from '../../models/saved-setup';
 
 @Component({
   selector: 'app-car-detail',
@@ -32,7 +37,10 @@ import { Symptom, SYMPTOM_OPTIONS, SymptomOption } from '../../models/behavior-f
     FormsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatInputModule,
+    MatIconModule,
+    DatePipe
   ]
 })
 export class CarDetailComponent implements OnInit {
@@ -42,6 +50,10 @@ export class CarDetailComponent implements OnInit {
   selectedTrackId = signal('');
   currentStepIndex = signal(0);
   selectedSymptoms = signal<Symptom[]>([]);
+  savedSetups = signal<SavedSetup[]>([]);
+  setupName = signal('');
+  setupNotes = signal('');
+  showSaveForm = signal(false);
 
   readonly symptomOptions: SymptomOption[] = SYMPTOM_OPTIONS;
 
@@ -113,7 +125,8 @@ export class CarDetailComponent implements OnInit {
     private trackService: TrackService,
     private tuningAnalysisService: TuningAnalysisService,
     private guidedTuning: GuidedTuning,
-    private diagnosticService: DiagnosticService
+    private diagnosticService: DiagnosticService,
+    private setupStorage: SetupStorageService
   ) {}
 
   ngOnInit(): void {
@@ -122,12 +135,53 @@ export class CarDetailComponent implements OnInit {
     if (id) {
       this.carService.getCarById(id).subscribe((car) => {
         this.car.set(car);
+        this.savedSetups.set(this.setupStorage.getForCar(car._id));
       });
     }
 
     this.trackService.getAllTracks().subscribe((res) => {
       this.tracks.set(res.tracks);
     });
+  }
+
+  saveSetup(): void {
+    const car = this.car();
+    const name = this.setupName().trim();
+    if (!car || !name) return;
+
+    const track = this.selectedTrack();
+    const setup: SavedSetup = {
+      id: crypto.randomUUID(),
+      carId: car._id,
+      carName: car.name ?? car._id,
+      name,
+      savedAt: new Date().toISOString(),
+      parts: { ...this.parts() },
+      trackId: track?._id,
+      trackName: track?.name,
+      symptoms: [...this.selectedSymptoms()],
+      notes: this.setupNotes().trim() || undefined
+    };
+
+    this.setupStorage.save(setup);
+    this.savedSetups.set(this.setupStorage.getForCar(car._id));
+    this.setupName.set('');
+    this.setupNotes.set('');
+    this.showSaveForm.set(false);
+  }
+
+  loadSetup(setup: SavedSetup): void {
+    this.parts.set({ ...setup.parts });
+    this.selectedSymptoms.set([...setup.symptoms]);
+    this.selectedTrackId.set(setup.trackId ?? '');
+    this.currentStepIndex.set(0);
+  }
+
+  deleteSetup(id: string): void {
+    const car = this.car();
+    if (!car) return;
+    this.setupStorage.delete(id);
+    this.savedSetups.set(this.setupStorage.getForCar(car._id));
   }
 
   selectedTrack = computed(() => {
