@@ -36,7 +36,8 @@ export class CarService {
       Car.find(query)
         .skip(skip)
         .limit(limit)
-        .sort({ manufacturer: 1, name: 1 }),
+        .sort({ manufacturer: 1, name: 1 })
+        .select('name manufacturer imageUrl category engineType normalized.pp normalized.drivetrain normalized.year normalized.weightKg normalized.powerHp'),
       Car.countDocuments(query)
     ]);
 
@@ -50,5 +51,22 @@ export class CarService {
 
   static async getCarById(id: string) {
     return Car.findById(id);
+  }
+
+  static async searchCars(query: string) {
+    return Car.find({
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { manufacturer: { $regex: query, $options: 'i' } },
+      ],
+    })
+      .limit(50)
+      .select('name manufacturer imageUrl category engineType normalized.pp normalized.drivetrain');
+  }
+
+  static async getCarsByManufacturer(manufacturer: string) {
+    return Car.find({ manufacturer: { $regex: `^${manufacturer}$`, $options: 'i' } })
+      .sort({ name: 1 })
+      .select('name manufacturer imageUrl category engineType normalized.pp normalized.drivetrain');
   }
 }

@@ -377,34 +377,6 @@
       </mat-card>
     }
 
-    <!-- GUIDE DE RÉGLAGE -->
-    @if (guidedSteps().length) {
-      <mat-card class="guided-card">
-        <mat-card-title>Guide de réglage étape par étape</mat-card-title>
-
-        @if (currentStep(); as step) {
-          <div class="step-progress">
-            <span>Étape {{ currentStepIndex() + 1 }} / {{ guidedSteps().length }}</span>
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="(currentStepIndex() + 1) / guidedSteps().length * 100"></div>
-            </div>
-          </div>
-
-          <div class="step">
-            <h3>{{ step.title }}</h3>
-            <p>{{ step.description }}</p>
-            @for (rec of step.recommendations; track rec) {
-              <p class="rec">• {{ rec }}</p>
-            }
-            <div class="step-actions">
-              <button mat-button (click)="prevStep()" [disabled]="currentStepIndex() === 0">← Précédent</button>
-              <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="currentStepIndex() === guidedSteps().length - 1">Suivant →</button>
-            </div>
-          </div>
-        }
-      </mat-card>
-    }
-
     <!-- SETUPS SAUVEGARDÉS -->
     <mat-card class="save-card">
       <div class="save-header">

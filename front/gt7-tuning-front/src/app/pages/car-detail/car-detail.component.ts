@@ -26,7 +26,6 @@ import { BaselineSetupService } from '../../services/baseline-setup.service';
 
 import { Car } from '../../models/car';
 import { Track } from '../../models/track';
-import { GuidedTuning, TuningStep } from '../../services/guided-tuning';
 import { Symptom, SymptomSeverity, SYMPTOM_OPTIONS, SymptomOption } from '../../models/behavior-feedback';
 import { SavedSetup } from '../../models/saved-setup';
 import { GlossaryComponent } from '../../components/glossary/glossary.component';
@@ -55,7 +54,6 @@ export class CarDetailComponent implements OnInit {
 
   tracks = signal<Track[]>([]);
   selectedTrackId = signal('');
-  currentStepIndex = signal(0);
   selectedSymptoms = signal<Symptom[]>([]);
   symptomSeverities = signal<Record<string, SymptomSeverity>>({});
   savedSetups = signal<SavedSetup[]>([]);
@@ -135,7 +133,6 @@ export class CarDetailComponent implements OnInit {
     private carService: CarService,
     private trackService: TrackService,
     private tuningAnalysisService: TuningAnalysisService,
-    private guidedTuning: GuidedTuning,
     private diagnosticService: DiagnosticService,
     private setupStorage: SetupStorageService,
     private ppBudgetService: PPBudgetService,
@@ -187,7 +184,6 @@ export class CarDetailComponent implements OnInit {
     this.parts.set({ ...setup.parts });
     this.selectedSymptoms.set([...setup.symptoms]);
     this.selectedTrackId.set(setup.trackId ?? '');
-    this.currentStepIndex.set(0);
   }
 
   deleteSetup(id: string): void {
@@ -217,34 +213,6 @@ export class CarDetailComponent implements OnInit {
       this.parts()
     );
   });
-
-  guidedSteps = computed(() => {
-  const car = this.car();
-  if (!car) return [];
-
-  return this.guidedTuning.generateSteps(
-    car,
-    this.selectedTrack(),
-    this.parts()
-  );
-});
-
-currentStep = computed(() => {
-  const steps = this.guidedSteps();
-  return steps[this.currentStepIndex()] || null;
-});
-
-nextStep() {
-  if (this.currentStepIndex() < this.guidedSteps().length - 1) {
-    this.currentStepIndex.update(v => v + 1);
-  }
-}
-
-prevStep() {
-  if (this.currentStepIndex() > 0) {
-    this.currentStepIndex.update(v => v - 1);
-  }
-}
 
   private diagnosticOutput = computed(() => {
     const car = this.car();

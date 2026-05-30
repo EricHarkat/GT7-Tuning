@@ -1,3 +1,62 @@
 <div class="home">
-  <h1>Bienvenue sur GT7 Tuning</h1>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hero-eyebrow">Gran Turismo 7</p>
+      <h1>Aide au réglage</h1>
+      <p class="hero-desc">
+        Configure ta voiture, déclare les comportements que tu observes sur la piste, et obtiens un diagnostic ciblé avec des valeurs concrètes à entrer dans le jeu.
+      </p>
+      <div class="hero-actions">
+        <a mat-raised-button color="primary" routerLink="/cars">
+          <mat-icon>directions_car</mat-icon>
+          Choisir ma voiture
+        </a>
+        <a mat-stroked-button routerLink="/tracks">
+          <mat-icon>map</mat-icon>
+          Explorer les circuits
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENT ÇA MARCHE -->
+  <section class="workflow-section">
+    <h2 class="section-title">Comment ça marche</h2>
+    <div class="workflow-grid">
+      @for (step of workflow; track step.label; let i = $index) {
+        <div class="workflow-step">
+          <div class="workflow-num">{{ i + 1 }}</div>
+          <mat-icon class="workflow-icon">{{ step.icon }}</mat-icon>
+          <strong>{{ step.label }}</strong>
+          <p>{{ step.desc }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- GUIDE GÉNÉRAL GT7 -->
+  <section class="guide-section">
+    <h2 class="section-title">Guide de réglage GT7</h2>
+    <p class="section-subtitle">L'ordre optimal pour aborder le réglage d'une voiture, quelle que soit sa configuration.</p>
+
+    <div class="steps-grid">
+      @for (step of steps; track step.num) {
+        <mat-card class="step-card">
+          <div class="step-card-header">
+            <span class="step-num-badge">{{ step.num }}</span>
+            <mat-icon class="step-icon">{{ step.icon }}</mat-icon>
+            <h3>{{ step.title }}</h3>
+          </div>
+          <p class="step-body">{{ step.body }}</p>
+          <div class="step-tip">
+            <mat-icon class="tip-icon">lightbulb</mat-icon>
+            <p>{{ step.tip }}</p>
+          </div>
+        </mat-card>
+      }
+    </div>
+  </section>
+
 </div>
