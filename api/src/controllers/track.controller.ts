@@ -18,7 +18,7 @@ export class TrackController {
 }
 
   static async getTrackById(req: Request, res: Response) {
-    const track = await TrackService.getTrackById(req.params.id);
+    const track = await TrackService.getTrackById(String(req.params['id']));
 
     if (!track) {
       return res.status(404).json({
@@ -37,7 +37,7 @@ export class TrackController {
   }
 
   static async getTracksByCategory(req: Request, res: Response) {
-    const tracks = await TrackService.getTracksByCategory(req.params.category);
+    const tracks = await TrackService.getTracksByCategory(String(req.params['category']));
     res.json(tracks);
   }
 }
